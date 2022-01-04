@@ -1,53 +1,6 @@
 <template>
   <div id="aside">
-    <el-container style="height: 100%">
-      <el-aside width="350px" height="100%">
-        <div class="aside_title">
-          <img src="./assets/images/aiztb_icon2.png" alt="" class="aside_img" />
-          <span>爱招投标后台管理平台</span>
-        </div>
-        <el-menu
-          default-active="3"
-          class="el-menu-vertical-demo"
-          background-color="#fff"
-          text-color="#000A12"
-          active-text-color="#3B6DEE"
-          @click.native="menuClick"
-        >
-          <el-menu-item
-            :index="item.id"
-            v-for="(item, index) in menuList"
-            :key="index"
-          >
-            <img :src="item.url" alt="" class="menu_img" />
-            <span class="menu_text">{{ item.text }}</span>
-            <i class="el-icon-arrow-right"></i>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <el-header>
-          <div class="left_main">
-            <el-badge :value="3" class="item">
-              <i class="el-icon-message-solid"></i>
-            </el-badge>
-            <i class="el-icon-s-tools"></i>
-          </div>
-          <div class="right_main">
-            <i class="el-icon-search"></i>
-            <el-avatar
-              size="large"
-              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-            ></el-avatar>
-            <p class="phone">186****2617</p>
-            <el-button plain>退出登录</el-button>
-          </div>
-        </el-header>
-        <el-main>
-          <router-view />
-        </el-main>
-      </el-container>
-    </el-container>
+    <router-view />
   </div>
 </template>
 
@@ -78,12 +31,16 @@ export default {
           id: "5",
         },
       ],
+      path: "",
     };
   },
   methods: {
     menuClick() {
-      console.log(1111);
+      // console.log(1111);
     },
+  },
+  created() {
+    this.path = this.$route.name;
   },
 };
 </script>

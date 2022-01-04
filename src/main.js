@@ -4,6 +4,9 @@ import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import router from './router'
+import { axiosPost, axiosGet } from './axios/axios'
+Vue.prototype.$axiosPost = axiosPost
+Vue.prototype.$axiosGet = axiosGet
 
 
 Vue.use(ElementUI);
