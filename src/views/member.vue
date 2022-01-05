@@ -30,6 +30,7 @@
         'text-align': 'center',
       }"
       @selection-change="handleSelectionChange"
+      border
     >
       <el-table-column type="selection" width="55" align="center">
       </el-table-column>
@@ -74,8 +75,8 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <div class="pages">
-      <el-pagination background layout="prev, pager, next" :total="1000">
+    <div class="pages" v-if="total > 0">
+      <el-pagination background layout="prev, pager, next" :total="total">
       </el-pagination>
     </div>
 
@@ -157,6 +158,7 @@ export default {
       activeOper: true, //批量模块颜色
       addTips: "", //添加文字颜色
       addSuccess: false,
+      total: 0, //列表条数
     };
   },
   methods: {
@@ -167,9 +169,13 @@ export default {
         num: 10,
       };
       this.$axiosGet("/user/list", params).then((res) => {
-        console.log(res);
         if (res.code == 200) {
           this.tableData = res.data;
+          this.$axiosGet("/user/pageInfo", {}).then((res) => {
+            if (res.code == 200) {
+              this.total = res.data;
+            }
+          });
         }
       });
     },
@@ -199,6 +205,31 @@ export default {
       this.addSuccess = false;
       this.addTips = "";
     },
+    // 单个删除
+    // Clickdelete(row) {
+    //   this.$confirm("确定删除该用户吗?", "提示", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //   })
+    //     .then(() => {
+    //       // this.Idsdelete(row.id);
+    //     })
+    //     .catch(() => {
+    //       return;
+    //     });
+    // },
+    // 删除封装
+    // Idsdelete(ids) {
+    //   let params = {
+    //     status: 2,
+    //     ids,
+    //   };
+    //   this.$axiosPost("/user/updateStatus", params).then((res) => {
+    //     if (res.data.code == 200) {
+    //       this.getList();
+    //     }
+    //   });
+    // },
   },
   created() {
     this.getList();
@@ -234,6 +265,7 @@ export default {
     align-items: center;
     justify-content: flex-end;
     padding: 12px 14px 12px 0;
+    cursor: pointer;
     .items {
       margin-left: 26px;
       span {

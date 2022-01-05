@@ -22,6 +22,7 @@
             :index="item.id"
             v-for="(item, index) in menuList"
             :key="index"
+            :disabled="index!=2"
           >
             <img :src="item.url" alt="" class="menu_img" />
             <span class="menu_text">{{ item.text }}</span>
