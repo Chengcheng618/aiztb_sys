@@ -1,252 +1,439 @@
 <template>
-  <div class="home">
-    <el-container style="height: 100%">
-      <el-aside width="350px" height="100%">
-        <div class="aside_title">
-          <img
-            src="../assets/images/aiztb_icon2.png"
-            alt=""
-            class="aside_img"
-          />
-          <span>爱招投标后台管理平台</span>
-        </div>
-        <el-menu
-          default-active="3"
-          class="el-menu-vertical-demo"
-          background-color="#fff"
-          text-color="#000A12"
-          active-text-color="#3B6DEE"
-          @click.native="menuClick"
-        >
-          <el-menu-item
-            :index="item.id"
-            v-for="(item, index) in menuList"
-            :key="index"
-            :disabled="index!=2"
-          >
-            <img :src="item.url" alt="" class="menu_img" />
-            <span class="menu_text">{{ item.text }}</span>
-            <i class="el-icon-arrow-right"></i>
-          </el-menu-item>
-        </el-menu>
-      </el-aside>
-      <el-container>
-        <el-header>
-          <div class="left_main">
-            <el-badge :value="3" class="item">
-              <i class="el-icon-message-solid"></i>
-            </el-badge>
-            <i class="el-icon-s-tools"></i>
+  <div class="member">
+    <div class="census">
+      <p v-for="(item, index) in censusList" :key="index">
+        {{ item.title }}：{{ item.num }}（人）
+      </p>
+      <el-button round @click="dialogFormVisible = true"
+        >添加内测会员
+      </el-button>
+    </div>
+    <div class="operation" :class="{ activeOper: activeOper }">
+      <div
+        v-for="(item, index) in operationList"
+        :key="index"
+        class="items"
+        style="color: #b8b8b8"
+        @click="alldelete(index)"
+      >
+        <i :class="item.class"></i>
+        <span>{{ item.title }}</span>
+      </div>
+    </div>
+    <el-table
+      ref="multipleTable"
+      :data="tableData"
+      tooltip-effect="dark"
+      style="width: 100%"
+      :header-cell-style="{
+        background: '#E2ECFF',
+        color: '#3B6DEE',
+        'text-align': 'center',
+      }"
+      @selection-change="handleSelectionChange"
+      border
+    >
+      <el-table-column type="selection" width="55" align="center">
+      </el-table-column>
+      <el-table-column label="ID" align="center">
+        <template slot-scope="scope">{{ scope.row.id }}</template>
+      </el-table-column>
+      <el-table-column prop="username" label="昵称" align="center">
+        <template slot-scope="scope">
+          <i class="el-icon-minus" v-if="scope.row.username == ''"></i>
+          <span v-else>{{ scope.row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="mobile" label="绑定手机号" align="center">
+      </el-table-column>
+      <el-table-column label="内测绑定" align="center">
+        <template slot-scope="scope">
+          <i
+            :class="scope.row.is_nei != 0 ? 'el-icon-check' : 'el-icon-minus'"
+          ></i>
+        </template>
+      </el-table-column>
+      <el-table-column label="会员有效期至" align="center">
+        <template slot-scope="scope">
+          <i class="el-icon-minus" v-if="scope.row.expire == '0'"></i>
+          <span v-else>{{
+            scope.row.expire == "1" ? "终身" : scope.row.expire
+          }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="vip_level" label="全部" align="center" width="200">
+        <template slot-scope="scope">
+          <span>{{ vip_level[scope.row.vip_level] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="200">
+        <template slot-scope="scope">
+          <div style="color: #5074d4">
+            <span>{{ scope.row.status == 0 ? "禁用" : "开启" }}</span>
+            <span @click="Clickdelete(scope.row)">删除</span>
           </div>
-          <div class="right_main">
-            <i class="el-icon-search"></i>
-            <el-avatar
-              size="large"
-              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
-            ></el-avatar>
-            <p class="phone">cinghoo</p>
-            <el-button plain @click="loginOut">退出登录</el-button>
-          </div>
-        </el-header>
-        <el-main>
-          <Member />
-        </el-main>
-      </el-container>
-    </el-container>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- 分页 -->
+    <div class="pages" v-if="total > 0">
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        @current-change="currentChange"
+      >
+      </el-pagination>
+    </div>
+
+    <!-- 添加内测会员弹框 -->
+    <el-dialog
+      title="添加内测会员"
+      :visible.sync="dialogFormVisible"
+      :show-close="false"
+      @close="close"
+    >
+      <div class="dialog_input" v-if="addSuccessT == '添加'">
+        <p>绑定手机号</p>
+        <el-input placeholder="请输入内容" v-model="dialogI" clearable>
+        </el-input>
+        <i class="el-icon-close" v-if="addTips.code == 400"></i>
+      </div>
+      <div v-else class="Success_inp">
+        <i class="el-icon-success"></i>
+        <span>已添加成功</span>
+      </div>
+      <p class="tips">{{ addTips.data }}</p>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false"
+          >{{ addSuccessT == "继续添加" ? "关 闭" : "取 消" }}
+        </el-button>
+        <el-button @click="Clickadd">{{ addSuccessT }}</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import Member from "./member";
 export default {
   data() {
     return {
-      menuList: [
-        { text: "首页", url: require("../assets/images/home.png"), id: "1" },
+      censusList: [
         {
-          text: "数据中心",
-          url: require("../assets/images/data.png"),
-          id: "2",
+          num: 0,
+          title: "VIP会员",
         },
         {
-          text: "会员中心",
-          url: require("../assets/images/member.png"),
-          id: "3",
+          num: 0,
+          title: "内测会员",
         },
         {
-          text: "充值金额",
-          url: require("../assets/images/money.png"),
-          id: "4",
+          num: 0,
+          title: "注册用户",
         },
         {
-          text: "审核中心",
-          url: require("../assets/images/examine.png"),
-          id: "5",
+          num: 0,
+          title: "游客",
         },
       ],
+      operationList: [
+        {
+          class: "el-icon-unlock",
+          title: "批量开启",
+        },
+        {
+          class: "el-icon-remove-outline",
+          title: "批量禁用",
+        },
+        {
+          class: "el-icon-delete",
+          title: "批量删除",
+        },
+      ],
+      tableData: [],
+      dialogFormVisible: false,
+      dialogI: "",
+      vip_level: {
+        0: "注册用户",
+        1: "内测会员",
+        2: "VIP会员",
+        3: "游客",
+      },
+      activeOper: true, //批量模块颜色
+      addTips: "", //添加文字颜色
+      total: 0, //列表条数
+      addSuccessT: "添加",
+      pageNum: 1, //当前页数
+      ids: "",
     };
   },
-  components: {
-    Member,
-  },
   methods: {
-    // 退出登录
-    loginOut() {
-      this.$confirm("确定退出登录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$axiosPost("/user/logout", {}).then((res) => {
-            if (res.data.code == 200) {
-              this.$router.push({
-                name: "Login",
-                params: {},
-              });
-              window.sessionStorage.setItem("access_token", "");
+    // 用户列表
+    getList() {
+      let params = {
+        page: this.pageNum,
+        num: 10,
+      };
+      this.$axiosGet("/user/list", params).then((res) => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+          this.$axiosGet("/user/pageInfo", {}).then((res) => {
+            if (res.code == 200) {
+              this.total = res.data;
             }
           });
+        }
+      });
+    },
+    // 用户数据统计
+    getTotal() {
+      this.$axiosGet("/user/total", {}).then((res) => {
+        this.censusList[0].num = res.data.vip;
+        this.censusList[1].num = res.data.nei_vip;
+        this.censusList[2].num = res.data.user;
+        this.censusList[3].num = res.data.vistor;
+      });
+    },
+    // 添加内测用户
+    Clickadd() {
+      this.$axiosPost("/user/beta", { mobile: this.dialogI }).then((res) => {
+        console.log(res.data);
+        this.addTips = res.data;
+        this.addSuccessT = res.data.code == 200 ? "继续添加" : "添加";
+      });
+      if (this.addSuccessT == "继续添加") {
+        this.addSuccess = false;
+      } else {
+        this.addSuccess = true;
+      }
+    },
+    // 表格选择按钮
+    handleSelectionChange(val) {
+      let arr = [];
+      this.activeOper = val.length > 0 ? false : true;
+      for (const obj of val) {
+        arr.push(obj.id);
+      }
+      arr = arr.join(",");
+      this.ids = arr;
+    },
+    // 关闭弹框事件
+    close() {
+      this.dialogI = "";
+      this.addSuccess = false;
+      this.addTips = "";
+    },
+    currentChange(val) {
+      this.pageNum = val;
+      this.getList();
+    },
+    // 单个删除
+    Clickdelete(row) {
+      console.log(row);
+      this.$confirm("确定删除该用户吗?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(() => {
+          this.Idsdelete(row.id);
         })
         .catch(() => {
           return;
         });
     },
+    // 删除封装
+    Idsdelete(ids) {
+      let params = {
+        status: 2,
+        ids,
+      };
+      this.$axiosPost("/user/updateStatus", params).then((res) => {
+        if (res.data.code == 200) {
+          this.getList();
+        }
+      });
+    },
+    // 批量删除
+    alldelete(index) {
+      if (!this.activeOper && index == 2) {
+        this.Idsdelete(this.ids);
+      }
+    },
+  },
+  created() {
+    this.getList();
+    // 用户数据统计
+    this.getTotal();
+    window.sessionStorage.setItem("type", 0);
   },
 };
 </script>
 
-<style lang="less">
-// @import "./views/Home/Home.less";
-html,
-body,
-.home {
-  /*统一设置高度为100%*/
-  height: 100%;
-  padding: 0px;
-  /*外部间距也是如此设置*/
-  margin: 0px;
-}
-.el-menu {
-  border: none;
-  height: 90%;
-}
-
-// 选中激活样式
-.is-active {
-  font-weight: 700;
-  font-size: 18px !important;
-  box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15),
-    0px 0px 10px 2px rgba(59, 109, 238, 0.15);
-  border-left: 4px solid #3b6dee;
-}
-
-.home {
-  height: 100%;
-
-  .aside_title {
+<style lang="less" scoped>
+.member {
+  .census {
     display: flex;
     align-items: center;
-    padding: 15px 50px;
-    background: #3b6dee;
-    color: #fff;
+    justify-content: space-around;
+    background: #d4e4ff;
+    border-radius: 10px;
+    padding-left: 27px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #3b6dee;
 
-    .aside_img {
-      width: 50px;
-      height: 50px;
+    .el-button {
+      margin: 0 14px 0 100px;
+      background: linear-gradient(180deg, #7fb1fb 0%, #3b6dee 100%);
+      color: #fff;
     }
 
-    span {
-      font-size: 18px;
-      font-weight: 500;
-      color: #ffffff;
-      line-height: 28px;
-      text-shadow: 1px 0px 10px rgba(59, 109, 238, 0.15);
-    }
-  }
-
-  .el-aside {
-    margin-right: 5px;
-    box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15);
-
-    .el-menu-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 16px;
-      margin-bottom: 10px;
-      height: 60px;
-    }
-
-    .el-menu-item:hover {
-      background: #ffffff !important;
-      // box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15), 0px 0px 10px 2px rgba(59, 109, 238, 0.15) !important;
+    p {
+      flex: 1;
     }
   }
 
-  .menu_img {
-    width: 40px;
-    height: 40px;
-    margin: 0 40px 0 36px;
-  }
-
-  .menu_text {
-    display: inline-block;
-    width: 100px;
-    flex: 1;
-  }
-}
-
-.el-header {
-  background: #f2f3f4;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 58px 0 40px !important;
-
-  .left_main {
+  .operation {
     display: flex;
     align-items: center;
-    i {
-      color: #8ca0b3;
-      font-size: 20px;
+    justify-content: flex-end;
+    padding: 12px 14px 12px 0;
+    cursor: pointer;
 
-      &:last-child {
-        margin-left: 20px;
+    .items {
+      margin-left: 26px;
+
+      span {
+        font-size: 14px;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.85);
+        margin-left: 5px;
+      }
+
+      i {
+        color: rgba(0, 0, 0, 0.85);
       }
     }
   }
+}
 
-  .item {
-    width: 20px;
+.cell {
+  span {
+    cursor: pointer;
+
+    &:not(:first-child) {
+      margin-left: 10px;
+    }
+  }
+}
+
+// 分页
+.pages {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+// 弹框
+.dialog_input {
+  display: flex;
+  align-items: center;
+
+  p {
+    width: 26%;
+    // font-size: 21px;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.85);
+    margin-right: 16px;
   }
 
-  .right_main {
-    display: flex;
-    align-items: center;
+  /deep/ .el-input__inner {
+    border-radius: 10px;
+    border: 1px solid #1e87f0;
+  }
 
-    .phone {
-      margin: 0 25px 0 9px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #8ca0b3;
+  i {
+    font-size: 24px;
+    color: #fa5151;
+    font-weight: bold;
+    margin-left: 16px;
+  }
+}
+
+/deep/ .el-dialog {
+  width: 25%;
+  border-radius: 17px;
+
+  .el-dialog__header {
+    background: linear-gradient(180deg, #7fb1fb 0%, #3b6dee 100%);
+    border-radius: 17px 17px 0px 0px;
+    text-align: center;
+    padding: 15px;
+
+    .el-dialog__title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+  }
+
+  .el-dialog__body {
+    padding: 15% 8% 10%;
+  }
+
+  .el-dialog__footer {
+    padding: 0 8% 5%;
+
+    .dialog-footer {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .el-button {
-      border: 1px solid #1e87f0;
-      padding: 9px 30px;
-      background: transparent;
-      color: #0b096d;
-    }
-
-    i {
-      color: #8ca0b3;
-      font-size: 20px;
-      margin-right: 20px;
+      background: linear-gradient(180deg, #7fb1fb 0%, #3b6dee 100%);
+      border-radius: 10px;
+      padding: 12px 40px;
+      color: #fff;
     }
   }
+
+  .tips {
+    color: #fa5151;
+    text-align: center;
+  }
 }
-.el-main {
-  padding: 14px 58px 0 40px !important;
+
+.activeOper {
+  i,
+  span {
+    color: #b8b8b8 !important;
+  }
+}
+
+.el-icon-check {
+  color: #3b6dee;
+  font-weight: 700;
+}
+
+.Success_inp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 50px;
+    color: #07c160;
+    margin-bottom: 12px;
+  }
+
+  span {
+    font-size: 20px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+  }
 }
 </style>
+

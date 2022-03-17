@@ -1,6 +1,60 @@
 <template>
-  <div id="aside">
-    <router-view />
+  <div class="home">
+    <el-container style="height: 100%" v-if="path != '/'">
+      <el-aside width="350px" height="100%">
+        <div class="aside_title">
+          <img src="./assets/images/aiztb_icon2.png" alt="" class="aside_img" />
+          <span>爱招投标后台管理平台</span>
+        </div>
+        <el-menu
+          :default-active="path"
+          class="el-menu-vertical-demo"
+          background-color="#fff"
+          text-color="#000A12"
+          active-text-color="#3B6DEE"
+          router
+        >
+          <el-menu-item
+            :index="item.path"
+            v-for="(item, index) in menuList"
+            :key="index"
+            :disabled="index != 2 && index != 4"
+            @click.native="menuClick(index)"
+          >
+            <img
+              :src="selectIndex == index ? item.url_select : item.url"
+              alt=""
+              class="menu_img"
+            />
+            <span class="menu_text">{{ item.text }}</span>
+            <i class="el-icon-arrow-right"></i>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+      <el-container>
+        <el-header>
+          <div class="left_main">
+            <el-badge :value="3" class="item">
+              <i class="el-icon-message-solid"></i>
+            </el-badge>
+            <i class="el-icon-s-tools"></i>
+          </div>
+          <div class="right_main">
+            <i class="el-icon-search"></i>
+            <el-avatar
+              size="large"
+              src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+            ></el-avatar>
+            <p class="phone">cinghoo</p>
+            <el-button plain @click="loginOut">退出登录</el-button>
+          </div>
+        </el-header>
+        <el-main>
+          <router-view />
+        </el-main>
+      </el-container>
+    </el-container>
+    <router-view v-else />
   </div>
 </template>
 
@@ -9,38 +63,80 @@ export default {
   data() {
     return {
       menuList: [
-        { text: "首页", url: require("./assets/images/home.png"), id: "1" },
+        {
+          text: "首页",
+          url: require("./assets/images/home.png"),
+          path: "",
+          url_select: require("./assets/images/home_select.png"),
+        },
         {
           text: "数据中心",
           url: require("./assets/images/data.png"),
-          id: "2",
+          url_select: require("./assets/images/data_select.png"),
+          path: "",
         },
         {
           text: "会员中心",
           url: require("./assets/images/member.png"),
-          id: "3",
+          url_select: require("./assets/images/member_select.png"),
+          path: "/Home",
         },
         {
           text: "充值金额",
           url: require("./assets/images/money.png"),
-          id: "4",
+          path: "",
+          url_select: require("./assets/images/money_select.png"),
         },
         {
           text: "审核中心",
           url: require("./assets/images/examine.png"),
-          id: "5",
+          url_select: require("./assets/images/examine_select.png"),
+          path: "/Examine",
         },
       ],
+      selectIndex: 2,
       path: "",
     };
   },
   methods: {
-    menuClick() {
-      // console.log(1111);
+    menuClick(e) {
+      console.log(e);
+      this.selectIndex = e;
+    },
+    // 退出登录
+    loginOut() {
+      this.$confirm("确定退出登录?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$axiosPost("/user/logout", {}).then((res) => {
+            if (res.data.code == 200) {
+              this.$router.push({
+                name: "Login",
+                params: {},
+              });
+              window.sessionStorage.setItem("access_token", "");
+              this.path = this.$route.path;
+            }
+          });
+        })
+        .catch(() => {
+          return;
+        });
     },
   },
   created() {
-    this.path = this.$route.name;
+    this.path = this.$route.path;
+    if (this.path == "/Home") {
+      this.selectIndex = 2;
+    } else if (this.path == "/Examine" || this.path == "/Detail") {
+      this.selectIndex = 4;
+    }
+  },
+  updated() {
+    this.path = this.$route.path;
   },
 };
 </script>
@@ -49,28 +145,15 @@ export default {
 // @import "./views/Home/Home.less";
 html,
 body,
-#aside {
+.home {
   /*统一设置高度为100%*/
   height: 100%;
   padding: 0px;
   /*外部间距也是如此设置*/
   margin: 0px;
 }
-.el-menu {
-  border: none;
-  height: 90%;
-}
 
-// 选中激活样式
-.is-active {
-  font-weight: 700;
-  font-size: 18px !important;
-  box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15),
-    0px 0px 10px 2px rgba(59, 109, 238, 0.15);
-  border-left: 4px solid #3b6dee;
-}
-
-#aside {
+.home {
   height: 100%;
 
   .aside_title {
@@ -110,6 +193,19 @@ body,
     .el-menu-item:hover {
       background: #ffffff !important;
       // box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15), 0px 0px 10px 2px rgba(59, 109, 238, 0.15) !important;
+    }
+    .el-menu {
+      border: none;
+      height: 90%;
+    }
+
+    // 选中激活样式
+    .is-active {
+      font-weight: 700;
+      font-size: 18px !important;
+      box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15),
+        0px 0px 10px 2px rgba(59, 109, 238, 0.15);
+      border-left: 4px solid #3b6dee;
     }
   }
 

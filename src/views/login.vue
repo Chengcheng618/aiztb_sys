@@ -95,7 +95,7 @@ export default {
               );
               this.$router.push({
                 name: "Home",
-                params: {  },
+                params: {},
               });
             } else {
               this.$message.error(res.data.data);

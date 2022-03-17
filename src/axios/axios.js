@@ -5,26 +5,26 @@ import { base_url } from './config'
 
 axios.defaults.retryDelay = 600 /* 请求延迟 */
 axios.defaults.timeout = 1500000 /* 响应超时时间 */
-//自动切换环境
+    //自动切换环境
 axios.defaults.baseURL = base_url
 
 // 请求拦截
 axios.interceptors.request.use(
-    (config) => {
-        let token = window.sessionStorage.getItem('access_token')
-        if (token) {
-            config.headers['token'] = token
+        (config) => {
+            let token = window.sessionStorage.getItem('access_token')
+            if (token) {
+                config.headers['token'] = token
+            }
+            if (config.method === 'post' && config['Content-Type'] == 'application/json') {
+                config.data = qs.stringify(config.data);
+            }
+            return config
+        },
+        (err) => {
+            return Promise.reject(err)
         }
-        if (config.method === 'post' && config['Content-Type'] == 'application/json') {
-            config.data = qs.stringify(config.data);
-        }
-        return config
-    },
-    (err) => {
-        return Promise.reject(err)
-    }
-)
-/* 返回状态判断(添加响应拦截器) */
+    )
+    /* 返回状态判断(添加响应拦截器) */
 axios.interceptors.response.use((res) => {
     /* 对返回数据是否成功做判断 */
     return res
