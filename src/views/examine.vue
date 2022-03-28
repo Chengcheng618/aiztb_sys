@@ -11,8 +11,7 @@
           :index="item.id"
           v-for="(item, index) in menuList"
           :key="index"
-          >{{ item.title }}</el-menu-item
-        >
+        >{{ item.title }}</el-menu-item>
       </el-menu>
     </div>
 
@@ -30,20 +29,18 @@
         border
       >
         <el-table-column prop="id" label="ID" align="center"></el-table-column>
-        <el-table-column
-          prop="company_name"
-          label="企业名称"
-          align="center"
-        ></el-table-column>
+        <el-table-column prop="company_name" label="企业名称" align="center"></el-table-column>
         <el-table-column label="审核类型" align="center">
           <template slot-scope="scope">
-            <span>{{
+            <span>
+              {{
               scope.row.type == 0 && active == 1
-                ? "招标发布"
-                : scope.row.type == 0 && active == 3
-                ? "企业认证"
-                : "需求发布"
-            }}</span>
+              ? "招标发布"
+              : scope.row.type == 0 && active == 3
+              ? "企业认证"
+              : "需求发布"
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="用户级别" align="center">
@@ -60,30 +57,42 @@
                     ? '#ccc'
                     : '',
               }"
-              >{{
-                scope.row.ctime == "" || scope.row.certify_insert_time == ""
-                  ? "无"
-                  : scope.row.ctime || scope.row.certify_insert_time
-              }}</span
             >
+              {{
+              scope.row.ctime == "" || scope.row.certify_insert_time == ""
+              ? "无"
+              : scope.row.ctime || scope.row.certify_insert_time
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="审核标识" align="center">
           <template slot-scope="scope">
-            <span>{{
-              status[scope.row.status || scope.row.company_verify_status]
-            }}</span>
+            <span v-if="active != '3'">
+              {{
+              status[scope.row.status]
+              }}
+            </span>
+            <span v-else>
+              {{
+              statuss[scope.row.company_verify_status]
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <div
               class="startbtn"
+              :class="[scope.row.status == 0?'startbtn':'activelook']"
               @click="startBtn(scope.row)"
-              :style="{ opacity: scope.row.status == 0 ? '' : '0.4' }"
-            >
-              开始审核
-            </div>
+              v-if="active != '3'"
+            >{{scope.row.status == 0?'开始审核':'查看'}}</div>
+            <div
+              :class="[scope.row.company_verify_status == 1?'startbtn':'activelook']"
+              @click="startBtn(scope.row)"
+              v-else
+            >{{scope.row.company_verify_status == 1?'开始审核':'查看'}}</div>
           </template>
         </el-table-column>
       </el-table>
@@ -95,8 +104,7 @@
         layout="prev, pager, next"
         :total="total"
         @current-change="currentChange"
-      >
-      </el-pagination>
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -122,41 +130,51 @@ export default {
       status: {
         0: "待审核",
         1: "审核成功",
-        2: "设个失败",
+        2: "审核失败",
+      },
+      statuss: {
+        1: "待审核",
+        2: "审核成功",
+        3: "审核失败",
       },
     };
   },
   methods: {
     // 选择表格项
     startBtn(row) {
-      if (row.status == 0) {
-        this.$router.push({
-          name: "Detail",
-          params: { type: this.active, id: row.id },
-        });
-      }
+      this.$router.push({
+        name: "Detail",
+        params: { type: this.active, id: row.id },
+      });
     },
-    // 分页按钮点击
-    currentChange(e) {
-      this.pageNum = e;
-    },
-    // tab切换
-    handleSelect(e) {
-      this.active = e;
-      switch (e) {
+    getfun() {
+      switch (this.active) {
         case "1":
           this.getList("/content/list");
+          this.getpageInfo("/content/pageInfo");
           break;
         case "2":
           this.getList("/require/list");
+          this.getpageInfo("/require/pageInfo");
           break;
         case "3":
           this.getList("/company/list");
+          this.getpageInfo("/company/pageInfo");
           break;
 
         default:
           break;
       }
+    },
+    // 分页按钮点击
+    currentChange(e) {
+      this.pageNum = e;
+      this.getfun()
+    },
+    // tab切换
+    handleSelect(e) {
+      this.active = e;
+      this.getfun()
     },
     // 招标列表
     getList(url) {
@@ -167,13 +185,12 @@ export default {
       this.$axiosGet(url, params).then((res) => {
         if (res.code == 200) {
           this.tableData = res.data;
-          this.getpageInfo();
         }
       });
     },
-    // 招标列表总数
-    getpageInfo() {
-      this.$axiosGet("/content/pageInfo", {}).then((res) => {
+    // 列表总数
+    getpageInfo(url) {
+      this.$axiosGet(url, {}).then((res) => {
         if (res.code == 200) {
           this.total = res.data;
         }
@@ -185,19 +202,7 @@ export default {
     if (this.$route.params.type) {
       this.active = this.$route.params.type;
     }
-    switch (this.active) {
-      case "1":
-        this.getList("/content/list");
-        break;
-      case "2":
-        this.getList("/require/list");
-        break;
-      case "3":
-        this.getList("/company/list");
-        break;
-      default:
-        break;
-    }
+    this.getfun()
   },
 };
 </script>
@@ -212,9 +217,16 @@ export default {
       background: linear-gradient(180deg, #7fb1fb 0%, #3b6dee 100%);
       box-shadow: 0px 4px 4px 0px rgba(86, 139, 243, 0.31);
       border-radius: 5px;
-      margin: 0 60px;
+      margin: 0 auto;
       color: #fff;
       padding: 2px 0;
+      cursor: pointer;
+      width: 100px;
+    }
+    .activelook {
+      color: #3b6dee;
+      background: transparent;
+      box-shadow: 0 0px 0px #ccc;
       cursor: pointer;
     }
     margin-bottom: 60px;

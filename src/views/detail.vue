@@ -11,8 +11,7 @@
           ? '需求发布'
           : ''
       "
-    >
-    </el-page-header>
+    ></el-page-header>
 
     <div class="bidding" v-if="type == '1'">
       <!-- 标题 -->
@@ -29,9 +28,11 @@
         </div>
         <div class="items">
           <span>单位类型：</span>
-          <span>{{
+          <span>
+            {{
             biddingList.bidder_type == 0 ? "招标方" : "代理机构"
-          }}</span>
+            }}
+          </span>
         </div>
         <div class="items">
           <span>招标标题：</span>
@@ -43,10 +44,10 @@
         </div>
         <div class="items">
           <span>所属地区：</span>
-          <span
-            >{{ biddingList.full_area }}{{ biddingList.full_city
-            }}{{ biddingList.full_district }}</span
-          >
+          <span>
+            {{ biddingList.full_area }}{{ biddingList.full_city
+            }}{{ biddingList.full_district }}
+          </span>
         </div>
         <div class="items">
           <span>行业类型：</span>
@@ -107,10 +108,10 @@
         </div>
         <div class="items">
           <span>所属地区：</span>
-          <span
-            >{{ biddingList.full_area }}{{ biddingList.full_city
-            }}{{ biddingList.full_district }}</span
-          >
+          <span>
+            {{ biddingList.full_area }}{{ biddingList.full_city
+            }}{{ biddingList.full_district }}
+          </span>
         </div>
         <div class="items">
           <span>详细地址：</span>
@@ -211,20 +212,19 @@
       <div class="right">
         <span class="title">营业执照：</span>
         <div class="license">
-          <img :src="biddingList.licence" alt="" />
+          <img :src="biddingList.licence" alt />
         </div>
         <span class="title">法人证件照：</span>
         <div class="card">
-          <img :src="biddingList.id_card_frontend" alt="" />
-          <img :src="biddingList.id_card_backend" alt="" />
+          <img :src="biddingList.id_card_frontend" alt />
+          <img :src="biddingList.id_card_backend" alt />
         </div>
         <div class="ctime">
           <span>认证时间：{{ biddingList.certify_time }}</span>
         </div>
       </div>
     </div>
-    <!--  v-if="biddingList.status == 0" -->
-    <div class="btns">
+    <div class="btns" v-if="biddingList.status == 0 || biddingList.company_verify_status == 1">
       <el-button @click="approved(2)">审核未通过</el-button>
       <el-button @click="approved(1)">审核通过</el-button>
     </div>
@@ -241,14 +241,11 @@
         </div>
       </div>
       <div class="sucessEdit" v-else>
-        <span class="dialogtitle">审核未通过原因 <span>*</span></span>
-        <el-input
-          type="textarea"
-          :rows="6"
-          placeholder="请输入审核未通过的原因"
-          v-model="textarea"
-        >
-        </el-input>
+        <span class="dialogtitle">
+          审核未通过原因
+          <span>*</span>
+        </span>
+        <el-input type="textarea" :rows="6" placeholder="请输入审核未通过的原因" v-model="textarea"></el-input>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">返回</el-button>
@@ -256,8 +253,7 @@
           @click="clicksure"
           :style="{ opacity: approveType == 2 && textarea == '' ? '0.4' : '' }"
           :disabled="approveType == 2 && textarea == '' ? true : false"
-          >确认</el-button
-        >
+        >确认</el-button>
       </div>
     </el-dialog>
   </div>
@@ -298,55 +294,53 @@ export default {
       });
     },
     clicksure() {
-      switch (this.type) {
-        case "1":
-          if (this.approveType == 2) {
+      if (this.approveType == 2) {
+        switch (this.type) {
+          case "1":
             this.params = {
               ids: this.id,
               status: 2,
               reason: this.textarea,
             };
-          }
-          this.getcheck("/content/check");
-          break;
-        case "2":
-          if (this.approveType == 2) {
+            this.getcheck("/content/check");
+            break;
+          case "2":
             this.params = {
               ids: this.id,
               status: 2,
               reason: this.textarea,
             };
-          }
-          this.getcheck("/require/check");
-          break;
-        case "3":
-          if (this.approveType == 2) {
+            this.getcheck("/require/check");
+            break;
+          case "3":
             this.params = {
               id: this.id,
-              status: 2,
+              type: 3,
               reason: this.textarea,
             };
-          }
-          this.getcheck("/company/verify");
-          break;
+            this.getcheck("/company/verify");
+            break;
 
-        default:
-          break;
+          default:
+            break;
+        }
       }
+      this.dialogFormVisible = false;
     },
     // 审核通过
     approved(e) {
       this.approveType = e;
       switch (this.type) {
         case "1":
-          this.dialogFormVisible = true;
           if (e == 1) {
             this.params = {
               ids: this.id,
               status: 1,
             };
+            this.getcheck("/content/check");
+          } else {
+            this.dialogFormVisible = true;
           }
-          this.getcheck("/content/check");
           break;
         case "2":
           if (e == 1) {
@@ -354,17 +348,21 @@ export default {
               ids: this.id,
               status: 1,
             };
+            this.getcheck("/require/check");
+          } else {
+            this.dialogFormVisible = true;
           }
-          this.getcheck("/require/check");
           break;
         case "3":
           if (e == 1) {
             this.params = {
               id: this.id,
-              status: 1,
+              type: 2,
             };
+            this.getcheck("/company/verify");
+          } else {
+            this.dialogFormVisible = true;
           }
-          this.getcheck("/company/verify");
           break;
 
         default:
@@ -374,7 +372,10 @@ export default {
     getcheck(url) {
       this.$axiosPost(url, this.params).then((res) => {
         if (res.data.code == 200) {
-          this.dialogFormVisible = true;
+          if (this.approveType == 1) {
+            this.dialogFormVisible = true;
+          }
+          this.$router.go(-1);
         }
       });
     },
