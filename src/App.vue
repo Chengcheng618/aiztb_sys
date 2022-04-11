@@ -20,6 +20,7 @@
             v-for="(item, index) in menuList"
             :key="index"
             @click.native="menuClick(index)"
+            :disabled="index != 2 && index != 4"
           >
             <img :src="selectIndex == index ? item.url_select : item.url" alt class="menu_img" />
             <span class="menu_text">{{ item.text }}</span>
