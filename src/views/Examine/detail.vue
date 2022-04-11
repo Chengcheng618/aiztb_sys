@@ -12,7 +12,18 @@
           : ''
       "
     ></el-page-header>
-
+    <div class="reason" v-if="biddingList.status == 2">
+      <div class="title">
+        <div class="name">
+          <div></div>
+          <span>审核状态：</span>
+        </div>
+      </div>
+      <div class="mian">
+        <span>失败原因：</span>
+        <span>{{biddingList.reason}}</span>
+      </div>
+    </div>
     <div class="bidding" v-if="type == '1'">
       <!-- 标题 -->
       <div class="title">
@@ -183,7 +194,7 @@
             <span>{{ biddingList.legal_person }}</span>
           </div>
           <div class="items">
-            <span style="width: 160px; display: inline-block">经营范围：</span>
+            <span style="min-width: 80px;display: inline-block">经营范围：</span>
             <span>{{ biddingList.business }}</span>
           </div>
           <div class="items">
@@ -265,11 +276,6 @@ export default {
     return {
       input: "",
       type: "", // 类型
-      damandnum: [
-        { title: "联系人", value: "王晓鸥" },
-        { title: "联系电话", value: "1515121541516" },
-        { title: "发布时间", value: "2021-10-21" },
-      ],
       biddingList: {}, //招标详情数据
       dialogFormVisible: false, //审核弹框
       approveType: 0, //区分点击的审核状态
@@ -287,7 +293,7 @@ export default {
     },
     getdetail(url) {
       this.$axiosGet(url, { id: this.id }).then((res) => {
-        console.log(res);
+        console.log(res.data.status);
         if (res.code == 200) {
           this.biddingList = res.data;
         }
@@ -381,9 +387,8 @@ export default {
     },
   },
   created() {
-    this.type = this.$route.params.type;
-    console.log(this.type);
-    this.id = this.$route.params.id;
+    this.type = this.$route.query.type;
+    this.id = this.$route.query.id;
     switch (this.type) {
       case "1":
         this.getdetail("/content/detail");
@@ -433,7 +438,7 @@ export default {
   display: flex;
   margin: 40px 0;
   .left {
-    width: 50%;
+    min-width: 400px;
     padding-right: 60px;
 
     .Input {
@@ -604,5 +609,12 @@ export default {
   border-radius: 0;
   resize: none;
   outline: none;
+}
+
+.reason {
+  margin: 28px 0 0 20px;
+  .mian {
+    padding-top: 20px;
+  }
 }
 </style>

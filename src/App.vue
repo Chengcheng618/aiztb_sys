@@ -3,7 +3,7 @@
     <el-container style="height: 100%" v-if="path != '/'">
       <el-aside width="350px" height="100%">
         <div class="aside_title">
-          <img src="./assets/images/aiztb_icon2.png" alt="" class="aside_img" />
+          <img src="./assets/images/aiztb_icon2.png" alt class="aside_img" />
           <span>爱招投标后台管理平台</span>
         </div>
         <el-menu
@@ -14,18 +14,14 @@
           active-text-color="#3B6DEE"
           router
         >
+          <!-- :disabled="index != 2 && index != 4" -->
           <el-menu-item
             :index="item.path"
             v-for="(item, index) in menuList"
             :key="index"
-            :disabled="index != 2 && index != 4"
             @click.native="menuClick(index)"
           >
-            <img
-              :src="selectIndex == index ? item.url_select : item.url"
-              alt=""
-              class="menu_img"
-            />
+            <img :src="selectIndex == index ? item.url_select : item.url" alt class="menu_img" />
             <span class="menu_text">{{ item.text }}</span>
             <i class="el-icon-arrow-right"></i>
           </el-menu-item>
@@ -66,25 +62,25 @@ export default {
         {
           text: "首页",
           url: require("./assets/images/home.png"),
-          path: "",
+          path: "/Home",
           url_select: require("./assets/images/home_select.png"),
         },
         {
           text: "数据中心",
           url: require("./assets/images/data.png"),
           url_select: require("./assets/images/data_select.png"),
-          path: "",
+          path: "/Data",
         },
         {
           text: "会员中心",
           url: require("./assets/images/member.png"),
           url_select: require("./assets/images/member_select.png"),
-          path: "/Home",
+          path: "/Member",
         },
         {
           text: "充值金额",
           url: require("./assets/images/money.png"),
-          path: "",
+          path: "/Price",
           url_select: require("./assets/images/money_select.png"),
         },
         {
@@ -94,7 +90,7 @@ export default {
           path: "/Examine",
         },
       ],
-      selectIndex: 2,
+      selectIndex: 0,
       path: "",
     };
   },
@@ -129,10 +125,28 @@ export default {
   },
   created() {
     this.path = this.$route.path;
-    if (this.path == "/Home") {
-      this.selectIndex = 2;
-    } else if (this.path == "/Examine" || this.path == "/Detail") {
-      this.selectIndex = 4;
+    switch (this.path) {
+      case "/Home":
+        this.selectIndex = 0;
+        break;
+      case "/Data":
+        this.selectIndex = 1;
+        break;
+      case "/Member":
+        this.selectIndex = 2;
+        break;
+      case "/Price":
+        this.selectIndex = 3;
+        break;
+      case "/Examine":
+        this.selectIndex = 4;
+        break;
+      case "/Detail":
+        this.selectIndex = 4;
+        break;
+
+      default:
+        break;
     }
   },
   updated() {

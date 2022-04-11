@@ -144,7 +144,7 @@ export default {
     startBtn(row) {
       this.$router.push({
         name: "Detail",
-        params: { type: this.active, id: row.id },
+        query: { type: this.active, id: row.id },
       });
     },
     getfun() {
