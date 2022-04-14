@@ -223,12 +223,12 @@
       <div class="right">
         <span class="title">营业执照：</span>
         <div class="license">
-          <img :src="biddingList.licence" alt />
+          <el-image :src="biddingList.licence" :preview-src-list="srcList"></el-image>
         </div>
         <span class="title">法人证件照：</span>
         <div class="card">
-          <img :src="biddingList.id_card_frontend" alt />
-          <img :src="biddingList.id_card_backend" alt />
+          <el-image :src="biddingList.id_card_frontend" :preview-src-list="srcList"></el-image>
+          <el-image :src="biddingList.id_card_backend" :preview-src-list="srcList"></el-image>
         </div>
         <div class="ctime">
           <span>认证时间：{{ biddingList.certify_time }}</span>
@@ -281,21 +281,25 @@ export default {
       approveType: 0, //区分点击的审核状态
       textarea: "", //文本框
       params: {},
+      srcList: [],
     };
   },
   methods: {
     // 返回上一页
     goBack() {
-      this.$router.push({
-        name: "Examine",
-        params: { type: this.type },
-      });
+      this.$router.go(-1);
     },
     getdetail(url) {
       this.$axiosGet(url, { id: this.id }).then((res) => {
         console.log(res.data.status);
         if (res.code == 200) {
           this.biddingList = res.data;
+          this.srcList = [
+            this.biddingList.licence,
+            this.biddingList.id_card_frontend,
+            this.biddingList.id_card_backend,
+          ];
+          console.log(this.srcList);
         }
       });
     },
@@ -385,6 +389,9 @@ export default {
         }
       });
     },
+    clickimg() {
+      console.log(111);
+    },
   },
   created() {
     this.type = this.$route.query.type;
@@ -398,6 +405,7 @@ export default {
         break;
       case "3":
         this.getdetail("/company/detail");
+
         break;
 
       default:
@@ -474,22 +482,13 @@ export default {
     .license {
       width: 576px;
       height: 385px;
-      border: 1px solid #e8e8e8;
       margin: 10px 0 20px;
-      img {
-        width: 100%;
-        height: 100%;
-      }
     }
     .card {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin: 10px 0;
-      img {
-        height: 179px;
-        width: 48%;
-      }
     }
   }
 }

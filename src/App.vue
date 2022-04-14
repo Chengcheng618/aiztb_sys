@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div id="app">
     <el-container style="height: 100%" v-if="path != '/'">
       <el-aside width="350px" height="100%">
         <div class="aside_title">
@@ -13,18 +13,65 @@
           text-color="#000A12"
           active-text-color="#3B6DEE"
           router
+          @select="selectopen"
         >
-          <!-- :disabled="index != 2 && index != 4" -->
-          <el-menu-item
-            :index="item.path"
-            v-for="(item, index) in menuList"
-            :key="index"
-            @click.native="menuClick(index)"
-          >
-            <img :src="selectIndex == index ? item.url_select : item.url" alt class="menu_img" />
-            <span class="menu_text">{{ item.text }}</span>
-            <i class="el-icon-arrow-right"></i>
+          <el-menu-item index="/Home">
+            <img
+              :src="indexPath == 1 ? require('./assets/images/home_select.png') :require('./assets/images/home.png')"
+              alt
+              class="menu_img"
+            />
+            <span class="menu_text">首页</span>
           </el-menu-item>
+          <el-submenu index="/Data">
+            <template slot="title">
+              <img
+                :src="indexPath == 2 ? require('./assets/images/data_select.png') :require('./assets/images/data.png')"
+                alt
+                class="menu_img"
+              />
+              <span class="menu_text">数据中心</span>
+            </template>
+            <!-- <el-menu-item-group>
+              <el-menu-item index="1-3">选项3</el-menu-item>
+            </el-menu-item-group>-->
+          </el-submenu>
+          <el-menu-item index="/Member">
+            <img
+              :src="indexPath == 3 ? require('./assets/images/member_select.png') :require('./assets/images/member.png')"
+              alt
+              class="menu_img"
+            />
+            <span class="menu_text">会员中心</span>
+          </el-menu-item>
+          <el-menu-item index="/Price">
+            <img
+              :src="indexPath == 4 ? require('./assets/images/money_select.png') :require('./assets/images/money.png')"
+              alt
+              class="menu_img"
+            />
+            <span class="menu_text">充值金额</span>
+          </el-menu-item>
+          <el-submenu index="/Examine">
+            <template slot="title">
+              <img
+                :src="indexPath == 5 ? require('./assets/images/examine_select.png') :require('./assets/images/examine.png')"
+                alt
+                class="menu_img"
+              />
+              <span class="menu_text">审核中心</span>
+            </template>
+            <el-menu-item index="/Bidding">
+              <p>招标发布</p>
+              <div class="messageCount">21</div>
+            </el-menu-item>
+            <el-menu-item index="/Demand">
+              <p>需求发布</p>
+            </el-menu-item>
+            <el-menu-item index="/Attestation">
+              <p>企业认证</p>
+            </el-menu-item>
+          </el-submenu>
         </el-menu>
       </el-aside>
       <el-container>
@@ -45,7 +92,7 @@
             <el-button plain @click="loginOut">退出登录</el-button>
           </div>
         </el-header>
-        <el-main>
+        <el-main :style="{background:path=='/Home'?'#f0f0f0':'#fff'}">
           <router-view />
         </el-main>
       </el-container>
@@ -58,47 +105,11 @@
 export default {
   data() {
     return {
-      menuList: [
-        {
-          text: "首页",
-          url: require("./assets/images/home.png"),
-          path: "/Home",
-          url_select: require("./assets/images/home_select.png"),
-        },
-        {
-          text: "数据中心",
-          url: require("./assets/images/data.png"),
-          url_select: require("./assets/images/data_select.png"),
-          path: "/Data",
-        },
-        {
-          text: "会员中心",
-          url: require("./assets/images/member.png"),
-          url_select: require("./assets/images/member_select.png"),
-          path: "/Member",
-        },
-        {
-          text: "充值金额",
-          url: require("./assets/images/money.png"),
-          path: "/Price",
-          url_select: require("./assets/images/money_select.png"),
-        },
-        {
-          text: "审核中心",
-          url: require("./assets/images/examine.png"),
-          url_select: require("./assets/images/examine_select.png"),
-          path: "/Examine",
-        },
-      ],
-      selectIndex: 0,
       path: "",
+      indexPath: 1,
     };
   },
   methods: {
-    menuClick(e) {
-      console.log(e);
-      this.selectIndex = e;
-    },
     // 退出登录
     loginOut() {
       this.$confirm("确定退出登录?", "提示", {
@@ -122,32 +133,31 @@ export default {
           return;
         });
     },
+    selectopen(e) {
+      console.log(e);
+      // switch (e) {
+      //   case "/Home":
+      //     this.indexPath = 1;
+      //     break;
+
+      //   default:
+      //     break;
+      // }
+      if (e == "/Home") {
+        this.indexPath = 1;
+      } else if (e == "/Data") {
+        this.indexPath = 2;
+      } else if (e == "/Member") {
+        this.indexPath = 3;
+      } else if (e == "/Price") {
+        this.indexPath = 4;
+      } else if (e == "/Bidding" || e == "/Demand" || e == "/Attestation") {
+        this.indexPath = 5;
+      }
+    },
   },
   created() {
     this.path = this.$route.path;
-    switch (this.path) {
-      case "/Home":
-        this.selectIndex = 0;
-        break;
-      case "/Data":
-        this.selectIndex = 1;
-        break;
-      case "/Member":
-        this.selectIndex = 2;
-        break;
-      case "/Price":
-        this.selectIndex = 3;
-        break;
-      case "/Examine":
-        this.selectIndex = 4;
-        break;
-      case "/Detail":
-        this.selectIndex = 4;
-        break;
-
-      default:
-        break;
-    }
   },
   updated() {
     this.path = this.$route.path;
@@ -159,7 +169,7 @@ export default {
 // @import "./views/Home/Home.less";
 html,
 body,
-.home {
+#app {
   /*统一设置高度为100%*/
   height: 100%;
   padding: 0px;
@@ -167,7 +177,7 @@ body,
   margin: 0px;
 }
 
-.home {
+#app {
   height: 100%;
 
   .aside_title {
@@ -192,8 +202,39 @@ body,
   }
 
   .el-aside {
-    margin-right: 5px;
     box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15);
+    border-right: 1px solid #f0f0f0;
+
+    .el-submenu {
+      height: 60px;
+      margin-bottom: 10px;
+      box-shadow: unset !important;
+      .el-submenu__title {
+        font-size: 16px;
+      }
+      // 选中激活样式
+      .is-active {
+        font-weight: 400 !important;
+        color: #3b6dee !important;
+        border-left: 4px solid #3b6dee !important;
+        background: rgba(59, 109, 238, 0.1) !important;
+        box-shadow: unset !important;
+      }
+      .el-menu {
+        margin-top: 20px;
+        .el-menu-item {
+          p {
+            text-align: center;
+            width: 240px;
+            font-size: 16px !important;
+          }
+        }
+      }
+    }
+
+    .is-opened {
+      box-shadow: unset !important;
+    }
 
     .el-menu-item {
       display: flex;
@@ -202,24 +243,38 @@ body,
       font-size: 16px;
       margin-bottom: 10px;
       height: 60px;
+      border-left: 4px solid transparent !important;
     }
 
     .el-menu-item:hover {
-      background: #ffffff !important;
-      // box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15), 0px 0px 10px 2px rgba(59, 109, 238, 0.15) !important;
+      background: rgba(59, 109, 238, 0.1) !important;
+      color: #3b6dee !important;
+    }
+    .el-submenu__title:hover {
+      background: rgba(59, 109, 238, 0.1) !important;
+      color: #3b6dee !important;
     }
     .el-menu {
       border: none;
       height: 90%;
-    }
-
-    // 选中激活样式
-    .is-active {
-      font-weight: 700;
-      font-size: 18px !important;
-      box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15),
-        0px 0px 10px 2px rgba(59, 109, 238, 0.15);
-      border-left: 4px solid #3b6dee;
+      // 选中激活样式
+      .is-active {
+        font-size: 18px !important;
+        box-shadow: 1px 0px 10px 0px rgba(59, 109, 238, 0.15),
+          0px 0px 10px 2px rgba(59, 109, 238, 0.15);
+        border-left: 4px solid #3b6dee;
+      }
+      .messageCount {
+        width: 22px;
+        height: 22px;
+        background: #f44336;
+        border-radius: 50%;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+      }
     }
   }
 
@@ -287,5 +342,45 @@ body,
 }
 .el-main {
   padding: 14px 58px 0 40px !important;
+}
+ul {
+  padding: 0;
+}
+p {
+  margin: 0;
+}
+
+// 招标发布全局样式
+.examine {
+  .search {
+    .el-input__inner {
+      border: none !important;
+      height: 34px;
+    }
+  }
+  .select_group {
+    .el-input__inner {
+      height: 36px;
+    }
+    .el-input__prefix {
+      top: -1px;
+    }
+  }
+}
+
+// 详情点开图片放大预览
+.detail {
+  .license {
+    .el-image {
+      width: 576px;
+      height: 385px;
+    }
+  }
+  .card {
+    .el-image {
+      height: 179px;
+      width: 48%;
+    }
+  }
 }
 </style>

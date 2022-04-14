@@ -1,18 +1,20 @@
 <template>
   <div class="examine">
-    <div class="meun">
-      <el-menu
-        :default-active="active"
-        class="el-menu-demo"
-        mode="horizontal"
-        @select="handleSelect"
-      >
-        <el-menu-item
-          :index="item.id"
-          v-for="(item, index) in menuList"
-          :key="index"
-        >{{ item.title }}</el-menu-item>
-      </el-menu>
+    <div class="bidding_top">
+      <div class="search">
+        <img src="../assets/images/search_high.png" alt />
+        <el-input v-model="input" placeholder="请输入内容"></el-input>
+        <div class="searchBtn">搜索</div>
+      </div>
+      <div class="select_group">
+        <el-date-picker v-model="value1" type="date" placeholder="审核时间"></el-date-picker>
+        <el-select v-model="value" placeholder="审核状态">
+          <el-option v-for="item in optionStatus" :key="item" :label="item" :value="item"></el-option>
+        </el-select>
+        <el-select v-model="value" placeholder="用户级别">
+          <el-option v-for="item in optionLevel" :key="item" :label="item" :value="item"></el-option>
+        </el-select>
+      </div>
     </div>
 
     <div class="table">
@@ -29,7 +31,15 @@
         border
       >
         <el-table-column prop="id" label="ID" align="center"></el-table-column>
-        <el-table-column prop="company_name" label="企业名称" align="center"></el-table-column>
+        <el-table-column label="企业名称" align="center">
+          <template slot-scope="scope">
+            <span>
+              {{
+              scope.row.company_name?scope.row.company_name:'-'
+              }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column label="审核类型" align="center">
           <template slot-scope="scope">
             <span>
@@ -113,14 +123,6 @@
 export default {
   data() {
     return {
-      menuList: [
-        { id: "1", title: "招标发布" },
-        { id: "2", title: "需求发布" },
-        { id: "3", title: "企业认证" },
-      ],
-      active: "1",
-      tableData: [],
-      total: 1,
       pageNum: 1,
       vip_level: {
         0: "普通用户",
@@ -137,7 +139,32 @@ export default {
         2: "审核成功",
         3: "审核失败",
       },
+      input: "",
+      optionStatus: ["全部", "待审核", "审核成功", "审核失败"],
+      optionLevel: ["全部", "游客", "注册用户", "内测会员", "VIP会员"],
+      value: "",
+      value1: "",
     };
+  },
+  props: {
+    tableData: {
+      type: Array,
+      default: function () {
+        return [];
+      },
+    },
+    total: {
+      type: Number,
+      default: function () {
+        return 1;
+      },
+    },
+    active: {
+      type: String,
+      default: function () {
+        return "";
+      },
+    },
   },
   methods: {
     // 选择表格项
@@ -147,62 +174,10 @@ export default {
         query: { type: this.active, id: row.id },
       });
     },
-    getfun() {
-      switch (this.active) {
-        case "1":
-          this.getList("/content/list");
-          this.getpageInfo("/content/pageInfo");
-          break;
-        case "2":
-          this.getList("/require/list");
-          this.getpageInfo("/require/pageInfo");
-          break;
-        case "3":
-          this.getList("/company/list");
-          this.getpageInfo("/company/pageInfo");
-          break;
-
-        default:
-          break;
-      }
-    },
     // 分页按钮点击
     currentChange(e) {
-      this.pageNum = e;
-      this.getfun()
+      this.$emit("pagenum", e);
     },
-    // tab切换
-    handleSelect(e) {
-      this.active = e;
-      this.getfun()
-    },
-    // 招标列表
-    getList(url) {
-      let params = {
-        page: this.pageNum,
-        num: 10,
-      };
-      this.$axiosGet(url, params).then((res) => {
-        if (res.code == 200) {
-          this.tableData = res.data;
-        }
-      });
-    },
-    // 列表总数
-    getpageInfo(url) {
-      this.$axiosGet(url, {}).then((res) => {
-        if (res.code == 200) {
-          this.total = res.data;
-        }
-      });
-    },
-  },
-  created() {
-    // this.active = window.sessionStorage.getItem("type");
-    if (this.$route.params.type) {
-      this.active = this.$route.params.type;
-    }
-    this.getfun()
   },
 };
 </script>
@@ -246,5 +221,47 @@ export default {
 }
 /deep/.el-menu-item.is-active {
   color: #386dee !important;
+}
+.bidding_top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  .search {
+    display: flex;
+    align-items: center;
+    width: 442px;
+    height: 36px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e4e4e4;
+    img {
+      width: 31px;
+      height: 34px;
+      padding-left: 11px;
+    }
+    .el-input {
+      height: 34px;
+    }
+    .searchBtn {
+      border-left: 1px solid #e4e4e4;
+      width: 50px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 9px;
+      color: #000a12;
+      line-height: 29px;
+    }
+  }
+  .select_group {
+    margin-left: 100px;
+    .el-select {
+      height: 36px;
+      margin-left: 30px;
+      .el-input {
+        height: 34px;
+      }
+    }
+  }
 }
 </style>
