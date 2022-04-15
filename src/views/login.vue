@@ -94,7 +94,7 @@ export default {
                 res.data.data.token
               );
               this.$router.push({
-                name: "Home",
+                name: "Member",
                 params: {},
               });
             } else {

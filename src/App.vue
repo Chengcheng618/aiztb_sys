@@ -92,7 +92,7 @@ export default {
         },
       ],
       selectIndex: 0,
-      path: "/Member",
+      path: "",
     };
   },
   methods: {
