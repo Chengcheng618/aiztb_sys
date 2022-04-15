@@ -33,11 +33,8 @@
         <el-table-column prop="id" label="ID" align="center"></el-table-column>
         <el-table-column label="企业名称" align="center">
           <template slot-scope="scope">
-            <span>
-              {{
-              scope.row.company_name?scope.row.company_name:'-'
-              }}
-            </span>
+            <span v-if="scope.row.company_name">{{scope.row.company_name}}</span>
+            <i class="el-icon-minus" v-else></i>
           </template>
         </el-table-column>
         <el-table-column label="审核类型" align="center">
