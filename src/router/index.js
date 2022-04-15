@@ -18,6 +18,8 @@ import Detail from '../views/Examine/detail.vue'
 import Data from '../views/Data/data.vue'
 // 充值金额
 import Price from '../views/Price/price.vue'
+// 通知中心
+import noticeCenter from '../views/noticeCenter.vue'
 
 Vue.use(VueRouter)
 
@@ -60,6 +62,10 @@ const routes = [{
         path: '/Attestation',
         name: 'Attestation',
         component: Attestation
+    }, {
+        path: '/noticeCenter',
+        name: 'noticeCenter',
+        component: noticeCenter
     },
 ]
 

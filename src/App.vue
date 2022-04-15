@@ -77,7 +77,7 @@
       <el-container>
         <el-header>
           <div class="left_main">
-            <el-badge :value="3" class="item">
+            <el-badge :value="3" class="item" @click.native="clickNotice">
               <i class="el-icon-message-solid"></i>
             </el-badge>
             <i class="el-icon-s-tools"></i>
@@ -134,15 +134,6 @@ export default {
         });
     },
     selectopen(e) {
-      console.log(e);
-      // switch (e) {
-      //   case "/Home":
-      //     this.indexPath = 1;
-      //     break;
-
-      //   default:
-      //     break;
-      // }
       if (e == "/Home") {
         this.indexPath = 1;
       } else if (e == "/Data") {
@@ -154,6 +145,12 @@ export default {
       } else if (e == "/Bidding" || e == "/Demand" || e == "/Attestation") {
         this.indexPath = 5;
       }
+    },
+    // 跳转通知中心
+    clickNotice() {
+      this.$router.push({
+        name: "noticeCenter",
+      });
     },
   },
   created() {
