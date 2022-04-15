@@ -29,7 +29,12 @@
         border
       >
         <el-table-column prop="id" label="ID" align="center"></el-table-column>
-        <el-table-column prop="company_name" label="企业名称" align="center"></el-table-column>
+        <el-table-column label="企业名称" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.company_name">{{scope.row.company_name}}</span>
+            <i class="el-icon-minus" v-else></i>
+          </template>
+        </el-table-column>
         <el-table-column label="审核类型" align="center">
           <template slot-scope="scope">
             <span>
@@ -169,12 +174,12 @@ export default {
     // 分页按钮点击
     currentChange(e) {
       this.pageNum = e;
-      this.getfun()
+      this.getfun();
     },
     // tab切换
     handleSelect(e) {
       this.active = e;
-      this.getfun()
+      this.getfun();
     },
     // 招标列表
     getList(url) {
@@ -202,7 +207,7 @@ export default {
     if (this.$route.params.type) {
       this.active = this.$route.params.type;
     }
-    this.getfun()
+    this.getfun();
   },
 };
 </script>
