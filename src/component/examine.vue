@@ -7,12 +7,21 @@
         <div class="searchBtn">搜索</div>
       </div>
       <div class="select_group">
-        <el-date-picker v-model="value1" type="date" placeholder="审核时间"></el-date-picker>
-        <el-select v-model="value" placeholder="审核状态">
-          <el-option v-for="item in optionStatus" :key="item" :label="item" :value="item"></el-option>
+        <el-date-picker
+          v-model="timeValue"
+          type="daterange"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :default-time="['00:00:00', '23:59:59']"
+          @change="dateChange"
+          value-format="yyyy-MM-dd"
+          @clear="dateClear"
+        ></el-date-picker>
+        <el-select v-model="statusValue" placeholder="审核状态" @change="statusChange">
+          <el-option v-for="(item,index) in optionStatus" :key="item" :label="item" :value="index"></el-option>
         </el-select>
-        <el-select v-model="value" placeholder="用户级别">
-          <el-option v-for="item in optionLevel" :key="item" :label="item" :value="item"></el-option>
+        <el-select v-model="levelValue" placeholder="用户级别" @change="levelChange">
+          <el-option v-for="(item,index) in optionLevel" :key="item" :label="item" :value="index"></el-option>
         </el-select>
       </div>
     </div>
@@ -31,6 +40,12 @@
         border
       >
         <el-table-column prop="id" label="ID" align="center"></el-table-column>
+        <el-table-column label="发布人" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.username">{{scope.row.username}}</span>
+            <i class="el-icon-minus" v-else></i>
+          </template>
+        </el-table-column>
         <el-table-column label="企业名称" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.company_name">{{scope.row.company_name}}</span>
@@ -63,15 +78,15 @@
             <span
               :style="{
                 color:
-                  scope.row.ctime == '' || scope.row.certify_insert_time == ''
+                  scope.row.ctime == '' || scope.row.certify_insert_time == '' || scope.row.start_time==''
                     ? '#ccc'
                     : '',
               }"
             >
               {{
-              scope.row.ctime == "" || scope.row.certify_insert_time == "" || scope.row.certify_time == ""
+              scope.row.ctime == "" || scope.row.certify_insert_time == "" || scope.row.start_time == ""
               ? "无"
-              : scope.row.ctime || scope.row.certify_insert_time|| scope.row.certify_time
+              : scope.row.ctime || scope.row.certify_insert_time|| scope.row.start_time
               }}
             </span>
           </template>
@@ -85,7 +100,7 @@
             </span>
             <span v-else>
               {{
-              status[scope.row.is_certify]
+              status[scope.row.company_verify_status]
               }}
             </span>
           </template>
@@ -99,10 +114,10 @@
               v-if="active != '3'"
             >{{scope.row.status == 0?'开始审核':'查看'}}</div>
             <div
-              :class="[scope.row.is_certify == 0?'startbtn':'activelook']"
+              :class="[scope.row.company_verify_status == 0?'startbtn':'activelook']"
               @click="startBtn(scope.row)"
               v-else
-            >{{scope.row.is_certify == 0?'开始审核':'查看'}}</div>
+            >{{scope.row.company_verify_status == 0?'开始审核':'查看'}}</div>
           </template>
         </el-table-column>
       </el-table>
@@ -127,7 +142,7 @@ export default {
       vip_level: {
         0: "普通用户",
         1: "内测会员",
-        2: "正式会员",
+        2: "VIP会员",
       },
       status: {
         0: "待审核",
@@ -136,9 +151,12 @@ export default {
       },
       input: "",
       optionStatus: ["全部", "待审核", "审核成功", "审核失败"],
-      optionLevel: ["全部", "游客", "注册用户", "内测会员", "VIP会员"],
+      optionLevel: ["全部", "普通用户", "内测会员", "VIP会员"],
       value: "",
       value1: "",
+      timeValue: "", //时间绑定值
+      statusValue: "", //审核状态绑定值
+      levelValue: "", //用户级别绑定值
     };
   },
   props: {
@@ -173,6 +191,28 @@ export default {
     currentChange(e) {
       this.$emit("pagenum", e);
     },
+    // 时间筛选
+    dateChange(e) {
+      this.$emit("time", JSON.stringify(e));
+    },
+    // 审核状态
+    statusChange(e) {
+      this.$emit("is_certify", e);
+      if (e == 0) {
+        this.statusValue = "";
+      }
+    },
+    // 用户级别
+    levelChange(e) {
+      this.$emit("vip_level", e);
+      if (e == 0) {
+        this.levelValue = "";
+      }
+    },
+    // 时间选择清除
+    dateClear(){
+      console.log(111);
+    },
   },
 };
 </script>
@@ -199,7 +239,7 @@ export default {
       box-shadow: 0 0px 0px #ccc;
       cursor: pointer;
     }
-    margin-bottom: 60px;
+    margin-bottom: 20px;
   }
   .pages {
     display: flex;
@@ -250,6 +290,8 @@ export default {
   }
   .select_group {
     margin-left: 100px;
+    display: flex;
+    align-items: center;
     .el-select {
       height: 36px;
       margin-left: 30px;

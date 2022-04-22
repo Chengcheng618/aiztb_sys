@@ -14,6 +14,7 @@
           active-text-color="#3B6DEE"
           router
           @select="selectopen"
+          :disabled="indexPath == '1' || indexPath == '2' || indexPath == '4' ? true : false"
         >
           <el-menu-item index="/Home">
             <img
@@ -60,7 +61,7 @@
             </template>
             <el-menu-item index="/Bidding">
               <p>招标发布</p>
-              <div class="messageCount">21</div>
+              <!-- <div class="messageCount">21</div> -->
             </el-menu-item>
             <el-menu-item index="/Demand">
               <p>需求发布</p>
@@ -404,7 +405,7 @@ p {
 .custom-content-marker {
   width: 50px !important;
   height: 50px !important;
-  background: rgba(59,109,238, .8);
+  background: rgba(59, 109, 238, 0.8);
   border-radius: 50%;
   display: flex;
   align-items: center;
