@@ -3,33 +3,25 @@
     <p class="title">通知中心</p>
     <div class="main">
       <el-collapse accordion>
-        <el-collapse-item>
+        <el-collapse-item v-for="(item,index) in noticeList" :key="index">
           <template slot="title">
             <div class="items_title">
               <span>小程序“爱招投标”的用户意见反馈信息</span>
-              <span>2022-03-18</span>
+              <span>{{item.ctime}}</span>
             </div>
           </template>
           <div class="in_main">
             <div>
-              <p>小程序用户2022-3-18 21:34:08发来意见反馈</p>
-              <p>问题和意见：首页数据信息查找不到想要的信息，感觉数据不全面，别的平台上都能查到的项目，在你们平台搜都搜不出来。还有那个生意圈的信息实在是太少了，建议多找点企业合作，提高用户可用性。</p>
-              <p>联系方式：18900008888</p>
+              <p>小程序用户{{item.ctime}}发来意见反馈</p>
+              <p>问题和意见：{{item.text}}</p>
+              <p>联系方式：{{item.phone?item.phone:'无'}}</p>
             </div>
             <div class="imgs">
               <el-image
                 style="width: 100px; height: 100px"
-                src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                :preview-src-list="srcList"
-              ></el-image>
-              <el-image
-                style="width: 100px; height: 100px"
-                src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
-                :preview-src-list="srcList"
-              ></el-image>
-              <el-image
-                style="width: 100px; height: 100px"
-                src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+                :src="obj.url"
+                v-for="(obj,index) in item.pic_url"
+                :key="index"
                 :preview-src-list="srcList"
               ></el-image>
             </div>
@@ -38,14 +30,7 @@
       </el-collapse>
     </div>
     <div class="pages">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="currentPage3"
-        :page-size="100"
-        layout="prev, pager, next, jumper"
-        :total="total"
-      ></el-pagination>
+      <el-pagination :page-size="100" layout="prev, pager, next, jumper" :total="total"></el-pagination>
     </div>
   </div>
 </template>
@@ -55,7 +40,31 @@ export default {
   data() {
     return {
       total: 0,
+      noticeList: [], //消息提示列表
+      srcList: [], //大图预览数组
     };
+  },
+  methods: {
+    getlist() {
+      let params = {
+        page: 1,
+        num: 10,
+      };
+      this.$axiosGet("/userfeedback/list", params).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          for (const obj of res.data) {
+            for (const item of obj.pic_url) {
+              this.srcList.push(item.url);
+            }
+          }
+          this.noticeList = res.data;
+        }
+      });
+    },
+  },
+  mounted() {
+    this.getlist();
   },
 };
 </script>

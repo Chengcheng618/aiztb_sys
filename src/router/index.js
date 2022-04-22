@@ -20,6 +20,8 @@ import Data from '../views/Data/data.vue'
 import Price from '../views/Price/price.vue'
 // 通知中心
 import noticeCenter from '../views/noticeCenter.vue'
+// 通知中心
+import memberRecharge from '../views/Home/memberRecharge.vue'
 
 Vue.use(VueRouter)
 
@@ -66,6 +68,10 @@ const routes = [{
         path: '/noticeCenter',
         name: 'noticeCenter',
         component: noticeCenter
+    }, {
+        path: '/memberRecharge',
+        name: 'memberRecharge',
+        component: memberRecharge
     },
 ]
 

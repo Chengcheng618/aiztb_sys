@@ -2,7 +2,7 @@
   <div class="home">
     <div class="home_left">
       <div class="home_left_top">
-        <div class="title">
+        <div class="title" @click="clickmember">
           <span>会员充值报告</span>
           <i class="el-icon-arrow-right"></i>
         </div>
@@ -230,7 +230,7 @@ export default {
           trigger: "axis", // 触发类型（'item'，数据项图形触发，主要在散点图，饼图等无类目轴的图表中使用；'axis'，坐标轴触发，主要在柱状图，折线图等会使用类目轴的图表中使用；'none'，不触发。）
           showContent: true, // 是否显示提示框浮层，默认显示
           alwaysShowContent: false, // 是否永远显示提示框内容，默认情况下在移出可触发提示框区域后一定时间后隐藏
-          triggerOn: "mousemove", 
+          triggerOn: "mousemove",
           confine: true, // 是否将 tooltip 框限制在图表的区域内
           backgroundColor: "#1E4FA6", // 提示框浮层的背景颜色
           padding: 5, // 提示框浮层内边距，单位px
@@ -437,6 +437,10 @@ export default {
         });
       }
     },
+    // 点击跳转会员充值报告
+    clickmember() {
+      this.$router.push("/memberRecharge");
+    },
   },
   created() {
     var date = new Date();
@@ -469,6 +473,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    cursor: pointer;
     i {
       color: #000;
       font-weight: bold;

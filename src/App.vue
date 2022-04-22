@@ -17,7 +17,7 @@
         >
           <el-menu-item index="/Home">
             <img
-              :src="indexPath == 1 ? require('./assets/images/home_select.png') :require('./assets/images/home.png')"
+              :src="indexPath == '1' ? require('./assets/images/home_select.png') :require('./assets/images/home.png')"
               alt
               class="menu_img"
             />
@@ -26,19 +26,16 @@
           <el-submenu index="/Data">
             <template slot="title">
               <img
-                :src="indexPath == 2 ? require('./assets/images/data_select.png') :require('./assets/images/data.png')"
+                :src="indexPath == '2' ? require('./assets/images/data_select.png') :require('./assets/images/data.png')"
                 alt
                 class="menu_img"
               />
               <span class="menu_text">数据中心</span>
             </template>
-            <!-- <el-menu-item-group>
-              <el-menu-item index="1-3">选项3</el-menu-item>
-            </el-menu-item-group>-->
           </el-submenu>
           <el-menu-item index="/Member">
             <img
-              :src="indexPath == 3 ? require('./assets/images/member_select.png') :require('./assets/images/member.png')"
+              :src="indexPath == '3' ? require('./assets/images/member_select.png') :require('./assets/images/member.png')"
               alt
               class="menu_img"
             />
@@ -46,7 +43,7 @@
           </el-menu-item>
           <el-menu-item index="/Price">
             <img
-              :src="indexPath == 4 ? require('./assets/images/money_select.png') :require('./assets/images/money.png')"
+              :src="indexPath == '4' ? require('./assets/images/money_select.png') :require('./assets/images/money.png')"
               alt
               class="menu_img"
             />
@@ -55,7 +52,7 @@
           <el-submenu index="/Examine">
             <template slot="title">
               <img
-                :src="indexPath == 5 ? require('./assets/images/examine_select.png') :require('./assets/images/examine.png')"
+                :src="indexPath == '5' ? require('./assets/images/examine_select.png') :require('./assets/images/examine.png')"
                 alt
                 class="menu_img"
               />
@@ -75,9 +72,14 @@
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header>
+        <el-header :style="{background:path=='/Home'?'rgba(255, 255, 255, 0.5)':'#f2f3f4'}">
           <div class="left_main">
-            <el-badge :value="3" class="item" @click.native="clickNotice">
+            <el-badge
+              :value="messageTotal"
+              class="item"
+              @click.native="clickNotice"
+              :hidden="messageTotal == 0 ? true : false"
+            >
               <i class="el-icon-message-solid"></i>
             </el-badge>
             <i class="el-icon-s-tools"></i>
@@ -106,7 +108,8 @@ export default {
   data() {
     return {
       path: "",
-      indexPath: 1,
+      indexPath: "1",
+      messageTotal: 0, // 铃铛消息条数
     };
   },
   methods: {
@@ -134,17 +137,7 @@ export default {
         });
     },
     selectopen(e) {
-      if (e == "/Home") {
-        this.indexPath = 1;
-      } else if (e == "/Data") {
-        this.indexPath = 2;
-      } else if (e == "/Member") {
-        this.indexPath = 3;
-      } else if (e == "/Price") {
-        this.indexPath = 4;
-      } else if (e == "/Bidding" || e == "/Demand" || e == "/Attestation") {
-        this.indexPath = 5;
-      }
+      this.getactive(e);
     },
     // 跳转通知中心
     clickNotice() {
@@ -152,9 +145,33 @@ export default {
         name: "noticeCenter",
       });
     },
+    getactive(e) {
+      if (e == "/Home") {
+        this.indexPath = "1";
+      } else if (e == "/Data") {
+        this.indexPath = "2";
+      } else if (e == "/Member") {
+        this.indexPath = "3";
+      } else if (e == "/Price") {
+        this.indexPath = "4";
+      } else if (e == "/Bidding" || e == "/Demand" || e == "/Attestation") {
+        this.indexPath = "5";
+      }
+    },
+    gettotal() {
+      this.$axiosGet("/statistics/total", {}).then((res) => {
+        if (res.code == 200) {
+          this.messageTotal = res.data.no_hand;
+        }
+      });
+    },
   },
   created() {
     this.path = this.$route.path;
+    this.getactive(this.path);
+  },
+  mounted() {
+    this.gettotal();
   },
   updated() {
     this.path = this.$route.path;
@@ -289,7 +306,6 @@ body,
 }
 
 .el-header {
-  background: #f2f3f4;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -348,7 +364,8 @@ p {
 }
 
 // 招标发布全局样式
-.examine {
+.examine,
+.operation {
   .search {
     .el-input__inner {
       border: none !important;
@@ -378,6 +395,27 @@ p {
       height: 179px;
       width: 48%;
     }
+  }
+}
+.amap-logo,
+.amap-copyright {
+  display: none !important;
+}
+.custom-content-marker {
+  width: 50px !important;
+  height: 50px !important;
+  background: rgba(59,109,238, .8);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: -40px;
+  left: -20px;
+  .close-btn {
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff;
   }
 }
 </style>

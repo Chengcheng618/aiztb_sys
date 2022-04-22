@@ -39,23 +39,26 @@
         </el-table-column>
         <el-table-column label="审核类型" align="center">
           <template slot-scope="scope">
-            <span>
+            <span v-if="active != 2">
               {{
-              scope.row.type == 0 && active == 1
+              active == 1
               ? "招标发布"
-              : scope.row.type == 0 && active == 3
-              ? "企业认证"
-              : "需求发布"
+              :active == 3?'企业认证'
+              : ""
               }}
+            </span>
+            <span v-else>
+              {{scope.row.type == 1 && active == 2
+              ? "采购需求":scope.row.type == 1 &&active == 2?'工程需求':'服务需求'}}
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="用户级别" align="center">
+        <el-table-column label="用户级别" align="center" v-if="active != 3">
           <template slot-scope="scope">
             <span>{{ vip_level[scope.row.vip_level] }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="ctime" label="提交申请时间" align="center">
+        <el-table-column prop="ctime" label="提交审核时间" align="center">
           <template slot-scope="scope">
             <span
               :style="{
@@ -66,9 +69,9 @@
               }"
             >
               {{
-              scope.row.ctime == "" || scope.row.certify_insert_time == ""
+              scope.row.ctime == "" || scope.row.certify_insert_time == "" || scope.row.certify_time == ""
               ? "无"
-              : scope.row.ctime || scope.row.certify_insert_time
+              : scope.row.ctime || scope.row.certify_insert_time|| scope.row.certify_time
               }}
             </span>
           </template>
@@ -82,7 +85,7 @@
             </span>
             <span v-else>
               {{
-              statuss[scope.row.company_verify_status]
+              status[scope.row.is_certify]
               }}
             </span>
           </template>
@@ -96,10 +99,10 @@
               v-if="active != '3'"
             >{{scope.row.status == 0?'开始审核':'查看'}}</div>
             <div
-              :class="[scope.row.company_verify_status == 1?'startbtn':'activelook']"
+              :class="[scope.row.is_certify == 0?'startbtn':'activelook']"
               @click="startBtn(scope.row)"
               v-else
-            >{{scope.row.company_verify_status == 1?'开始审核':'查看'}}</div>
+            >{{scope.row.is_certify == 0?'开始审核':'查看'}}</div>
           </template>
         </el-table-column>
       </el-table>
@@ -130,11 +133,6 @@ export default {
         0: "待审核",
         1: "审核成功",
         2: "审核失败",
-      },
-      statuss: {
-        1: "待审核",
-        2: "审核成功",
-        3: "审核失败",
       },
       input: "",
       optionStatus: ["全部", "待审核", "审核成功", "审核失败"],
