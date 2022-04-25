@@ -14,9 +14,8 @@
           active-text-color="#3B6DEE"
           router
           @select="selectopen"
-          :disabled="indexPath == '1' || indexPath == '2' || indexPath == '4' ? true : false"
         >
-          <el-menu-item index="/Home">
+          <el-menu-item index="/Home" disabled>
             <img
               :src="indexPath == '1' ? require('./assets/images/home_select.png') :require('./assets/images/home.png')"
               alt
@@ -24,7 +23,7 @@
             />
             <span class="menu_text">首页</span>
           </el-menu-item>
-          <el-submenu index="/Data">
+          <el-submenu index="/Data" disabled>
             <template slot="title">
               <img
                 :src="indexPath == '2' ? require('./assets/images/data_select.png') :require('./assets/images/data.png')"
@@ -42,7 +41,7 @@
             />
             <span class="menu_text">会员中心</span>
           </el-menu-item>
-          <el-menu-item index="/Price">
+          <el-menu-item index="/Price" disabled>
             <img
               :src="indexPath == '4' ? require('./assets/images/money_select.png') :require('./assets/images/money.png')"
               alt
@@ -61,13 +60,15 @@
             </template>
             <el-menu-item index="/Bidding">
               <p>招标发布</p>
-              <!-- <div class="messageCount">21</div> -->
+              <div class="messageCount" v-if="contentNum!=0">{{contentNum}}</div>
             </el-menu-item>
             <el-menu-item index="/Demand">
               <p>需求发布</p>
+              <div class="messageCount" v-if="requireNum!=0">{{requireNum}}</div>
             </el-menu-item>
             <el-menu-item index="/Attestation">
               <p>企业认证</p>
+              <div class="messageCount" v-if="companyNum!=0">{{companyNum}}</div>
             </el-menu-item>
           </el-submenu>
         </el-menu>
@@ -111,6 +112,9 @@ export default {
       path: "",
       indexPath: "1",
       messageTotal: 0, // 铃铛消息条数
+      contentNum: 0, //招标待审核数量
+      requireNum: 0, //需求待审核数量
+      companyNum: 0, //企业认证待审核数量
     };
   },
   methods: {
@@ -166,10 +170,31 @@ export default {
         }
       });
     },
+    getuncontentCheck() {
+      this.$axiosGet("/content/unCheck", {}).then((res) => {
+        this.contentNum = res.data;
+      });
+    },
+    getunrequireCheck() {
+      this.$axiosGet("/require/unCheck", {}).then((res) => {
+        this.requireNum = res.data;
+      });
+    },
+    getuncompanyCheck() {
+      this.$axiosGet("/company/unCheck", {}).then((res) => {
+        this.companyNum = res.data;
+      });
+    },
   },
   created() {
     this.path = this.$route.path;
     this.getactive(this.path);
+    // 招标待审核
+    this.getuncontentCheck();
+    // 需求待审核
+    this.getunrequireCheck();
+    // 认证待审核
+    this.getuncompanyCheck();
   },
   mounted() {
     this.gettotal();

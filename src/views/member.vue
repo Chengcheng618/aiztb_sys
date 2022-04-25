@@ -161,13 +161,13 @@ export default {
       },
       activeOper: true, //批量模块颜色
       addTips: "", //添加文字颜色
-      total: 0, //列表条数
+      total: 1, //列表条数
       addSuccessT: "添加",
       pageNum: 1, //当前页数
       ids: "",
       input: "", //搜索值
       levels: "", //用户级别
-      mobile: "", //用户手机号
+      sName: "", //搜索值
     };
   },
   methods: {
@@ -177,7 +177,7 @@ export default {
         page: this.pageNum,
         num: 10,
         vip_level: this.levels,
-        mobile: this.mobile,
+        keywords: this.sName,
       };
       this.$axiosGet("/user/list", params).then((res) => {
         if (res.code == 200) {
@@ -268,7 +268,7 @@ export default {
     },
     // 搜索
     searchClick() {
-      this.mobile = this.input;
+      this.sName = this.input;
       this.getList();
     },
     // 搜索输入事件
@@ -276,7 +276,7 @@ export default {
       this.input = e;
       // 点击清空后自动调取函数
       if (this.input == "") {
-        this.mobile = "";
+        this.sName = "";
         this.getList();
       }
     },
@@ -323,6 +323,8 @@ export default {
     font-size: 16px;
     font-weight: 600;
     color: #3b6dee;
+    width: auto;
+    min-width: 1000px;
 
     .el-button {
       margin: 10px 14px 10px 100px;
@@ -331,8 +333,10 @@ export default {
     }
 
     p {
-      flex: 1;
+      // flex: 1;
       cursor: pointer;
+      width: auto;
+      min-width: 100px;
     }
   }
 
@@ -342,6 +346,8 @@ export default {
     justify-content: space-between;
     padding: 12px 14px 12px 0;
     cursor: pointer;
+    width: auto;
+    min-width: 1000px;
     .batch {
       display: flex;
       align-items: center;

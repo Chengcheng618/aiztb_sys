@@ -3,8 +3,8 @@
     <div class="bidding_top">
       <div class="search">
         <img src="../assets/images/search_high.png" alt />
-        <el-input v-model="input" placeholder="请输入内容"></el-input>
-        <div class="searchBtn">搜索</div>
+        <el-input v-model="sName" placeholder="请输入内容" @input="inputClick" clearable></el-input>
+        <div class="searchBtn" @click="clickSearch">搜索</div>
       </div>
       <div class="select_group">
         <el-date-picker
@@ -39,7 +39,7 @@
         }"
         border
       >
-        <el-table-column prop="id" label="ID" align="center"></el-table-column>
+        <el-table-column prop="id" label="ID" align="center" width="100"></el-table-column>
         <el-table-column label="发布人" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.username">{{scope.row.username}}</span>
@@ -68,7 +68,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="用户级别" align="center" v-if="active != 3">
+        <el-table-column label="用户级别" align="center">
           <template slot-scope="scope">
             <span>{{ vip_level[scope.row.vip_level] }}</span>
           </template>
@@ -91,6 +91,13 @@
             </span>
           </template>
         </el-table-column>
+        <el-table-column label="审核时间" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.check_time">{{ scope.row.check_time }}</span>
+            <span v-if="scope.row.certify_time">{{ scope.row.certify_time }}</span>
+            <i class="el-icon-minus" v-else></i>
+          </template>
+        </el-table-column>
         <el-table-column label="审核标识" align="center">
           <template slot-scope="scope">
             <span v-if="active != '3'">
@@ -100,7 +107,7 @@
             </span>
             <span v-else>
               {{
-              status[scope.row.company_verify_status]
+              statuss[scope.row.company_verify_status]
               }}
             </span>
           </template>
@@ -114,10 +121,10 @@
               v-if="active != '3'"
             >{{scope.row.status == 0?'开始审核':'查看'}}</div>
             <div
-              :class="[scope.row.company_verify_status == 0?'startbtn':'activelook']"
+              :class="[scope.row.company_verify_status == 0 || scope.row.company_verify_status == 1?'startbtn':'activelook']"
               @click="startBtn(scope.row)"
               v-else
-            >{{scope.row.company_verify_status == 0?'开始审核':'查看'}}</div>
+            >{{scope.row.company_verify_status == 0 || scope.row.company_verify_status == 1?'开始审核':'查看'}}</div>
           </template>
         </el-table-column>
       </el-table>
@@ -149,9 +156,15 @@ export default {
         1: "审核成功",
         2: "审核失败",
       },
-      input: "",
+      statuss: {
+        0: "待审核",
+        1: "待审核",
+        2: "审核成功",
+        3: "审核失败",
+      },
+      sName: "", //搜索值
       optionStatus: ["全部", "待审核", "审核成功", "审核失败"],
-      optionLevel: ["全部", "普通用户", "内测会员", "VIP会员"],
+      optionLevel: ["全部", "游客", "普通用户", "内测会员", "VIP会员"],
       value: "",
       value1: "",
       timeValue: "", //时间绑定值
@@ -210,8 +223,20 @@ export default {
       }
     },
     // 时间选择清除
-    dateClear(){
+    dateClear() {
       console.log(111);
+    },
+    // 输入事件
+    inputClick(e) {
+      this.sName = e;
+      if (this.sName == "") {
+        this.sName = "";
+        this.$emit("sName", this.sName);
+      }
+    },
+    // 搜索事件
+    clickSearch() {
+      this.$emit("sName", this.sName);
     },
   },
 };
@@ -286,6 +311,7 @@ export default {
       padding: 0 9px;
       color: #000a12;
       line-height: 29px;
+      cursor: pointer;
     }
   }
   .select_group {

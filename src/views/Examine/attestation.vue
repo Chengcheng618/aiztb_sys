@@ -8,6 +8,7 @@
       @time="gettime"
       @is_certify="getcertify"
       @vip_level="getlevel"
+      @sName="getsName"
     />
   </div>
 </template>
@@ -22,6 +23,9 @@ export default {
       total: 0,
       is_certify: "", //审核标识
       vip_level: "", //用户级别
+      start_time: "", //开始时间
+      end_time: "", //结束时间
+      searchName: "", //搜索值
     };
   },
   components: {
@@ -36,6 +40,7 @@ export default {
         start_time,
         end_time,
         vip_level: this.vip_level,
+        keywords: this.searchName,
       };
       this.$axiosGet("/company/list", params).then((res) => {
         if (res.code == 200) {
@@ -63,6 +68,8 @@ export default {
       if (time == null) {
         time = ["", ""];
       }
+      this.start_time = time[0];
+      this.end_time = time[1];
       this.getlist(time[0], time[1]);
     },
     // 传递的审核状态
@@ -84,7 +91,7 @@ export default {
         default:
           break;
       }
-      this.getlist("", "");
+      this.getlist(this.start_time, this.end_time);
     },
     // 传递的用户级别
     getlevel(e) {
@@ -93,23 +100,31 @@ export default {
           this.vip_level = "";
           break;
         case 1:
-          this.vip_level = 0;
+          this.vip_level = 3;
           break;
         case 2:
-          this.vip_level = 1;
+          this.vip_level = 0;
           break;
         case 3:
+          this.vip_level = 1;
+          break;
+        case 4:
           this.vip_level = 2;
           break;
 
         default:
           break;
       }
-      this.getlist("", "");
+      this.getlist(this.start_time, this.end_time);
+    },
+    // 搜索
+    getsName(e) {
+      this.searchName = e;
+      this.getlist(this.start_time, this.end_time);
     },
   },
   created() {
-    this.getlist("", "");
+    this.getlist(this.start_time, this.end_time);
   },
 };
 </script>
