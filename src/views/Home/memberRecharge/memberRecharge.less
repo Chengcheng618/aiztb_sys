@@ -1,0 +1,193 @@
+.goback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    width: auto;
+    min-width: 1000px;
+
+    .total {
+        display: flex;
+        align-items: center;
+        margin: 0;
+
+        li {
+            list-style-type: none;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 29px;
+            margin-left: 40px;
+            width: 200px;
+
+            p {
+                span {
+                    &:first-child {
+                        color: #7fa3ff;
+                        margin-right: 10px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .name {
+        flex: 1;
+        font-size: 18px;
+        font-weight: 500;
+        color: #000A12;
+    }
+
+
+    .el-select {
+        width: 140px;
+    }
+}
+
+.centerDiv {
+    width: 100%;
+    display: flex;
+
+    .Chart {
+        width: auto;
+        min-width: 920px !important;
+        margin-right: 60px;
+
+        .linechart {
+            margin-bottom: 36px;
+        }
+
+        .piechart {
+            display: flex;
+            justify-content: space-between;
+
+            .items {
+                width: auto;
+                min-width: 450px;
+
+                .centerText {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    top: 50%;
+                    transform: translate(84px, -50%);
+
+                    span {
+                        font-size: 12px;
+                        font-weight: 400;
+                        color: #000A12;
+
+                        &:last-child {
+                            font-size: 26px;
+                            font-weight: 500;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .Map {
+        width: auto;
+        min-width: 500px !important;
+
+        .title {
+            .name {
+                line-height: 40px;
+            }
+        }
+
+        .ranking {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            >span {
+                font-size: 16px;
+                font-weight: 400;
+                color: #7FA3FF;
+                line-height: 22px;
+                margin-top: 7px;
+                cursor: pointer;
+            }
+        }
+
+        .mapTabs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #E2ECFF;
+            padding: 4px 0;
+            margin-top: 10px;
+
+            >span {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translate(0, -50%);
+                color: #606266;
+                font-size: 14px;
+            }
+
+            div {
+                background: #3B6DEE;
+                color: #fff;
+                padding: 2px 20px;
+                margin-left: 40px;
+                border-radius: 40px;
+                font-size: 12px;
+                cursor: pointer;
+
+                &:last-child {
+                    background: #FAA059;
+                }
+            }
+        }
+
+    }
+}
+
+.partTable {
+    width: auto;
+    min-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+
+    >span {
+        font-size: 16px;
+        font-weight: 400;
+        color: #7FA3FF;
+        line-height: 22px;
+        margin-top: 15px;
+        cursor: pointer;
+    }
+
+    .lookInfo {
+        border: none !important;
+        font-size: 14px;
+        font-weight: 400;
+        color: #7FA3FF;
+        line-height: 16px;
+    }
+}
+
+/deep/.el-table {
+    .el-table__cell {
+        padding: 6px 0 !important;
+        text-align: center;
+    }
+}

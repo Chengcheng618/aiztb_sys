@@ -1,23 +1,30 @@
 <template>
   <div class="member">
     <div class="census">
-      <p v-for="(item, index) in censusList" :key="index">
-        {{ item.title }}：{{ item.num }}（人）
-      </p>
-      <el-button round @click="dialogFormVisible = true"
-        >添加内测会员
-      </el-button>
+      <p
+        v-for="(item, index) in censusList"
+        :key="index"
+        @click="levelClick(index)"
+      >{{ item.title }}：{{ item.num }}（人）</p>
+      <el-button round @click="dialogFormVisible = true">添加内测会员</el-button>
     </div>
     <div class="operation" :class="{ activeOper: activeOper }">
-      <div
-        v-for="(item, index) in operationList"
-        :key="index"
-        class="items"
-        style="color: #b8b8b8"
-        @click="alldelete(index)"
-      >
-        <i :class="item.class"></i>
-        <span>{{ item.title }}</span>
+      <div class="search">
+        <img src="../assets/images/search_high.png" alt />
+        <el-input v-model="input" placeholder="请输入内容" clearable @input="inputClick"></el-input>
+        <div class="searchBtn" @click="searchClick">搜索</div>
+      </div>
+      <div class="batch">
+        <div
+          v-for="(item, index) in operationList"
+          :key="index"
+          class="items"
+          style="color: #b8b8b8"
+          @click="alldelete(index)"
+        >
+          <i :class="item.class"></i>
+          <span>{{ item.title }}</span>
+        </div>
       </div>
     </div>
     <el-table
@@ -33,8 +40,7 @@
       @selection-change="handleSelectionChange"
       border
     >
-      <el-table-column type="selection" width="55" align="center">
-      </el-table-column>
+      <el-table-column type="selection" width="55" align="center"></el-table-column>
       <el-table-column label="ID" align="center">
         <template slot-scope="scope">{{ scope.row.id }}</template>
       </el-table-column>
@@ -45,23 +51,27 @@
         </template>
       </el-table-column>
       <el-table-column prop="mobile" label="绑定手机号" align="center">
+        <template slot-scope="scope">
+          <span v-if="scope.row.mobile">{{scope.row.mobile}}</span>
+          <i class="el-icon-minus" v-else></i>
+        </template>
       </el-table-column>
       <el-table-column label="内测绑定" align="center">
         <template slot-scope="scope">
-          <i
-            :class="scope.row.is_nei != 0 ? 'el-icon-check' : 'el-icon-minus'"
-          ></i>
+          <i :class="scope.row.is_nei != 0 ? 'el-icon-check' : 'el-icon-minus'"></i>
         </template>
       </el-table-column>
       <el-table-column label="会员有效期至" align="center">
         <template slot-scope="scope">
           <i class="el-icon-minus" v-if="scope.row.expire == '0'"></i>
-          <span v-else>{{
+          <span v-else>
+            {{
             scope.row.expire == "1" ? "终身" : scope.row.expire
-          }}</span>
+            }}
+          </span>
         </template>
       </el-table-column>
-      <el-table-column prop="vip_level" label="全部" align="center" width="200">
+      <el-table-column prop="vip_level" label="用户等级" align="center" width="200">
         <template slot-scope="scope">
           <span>{{ vip_level[scope.row.vip_level] }}</span>
         </template>
@@ -82,21 +92,14 @@
         layout="prev, pager, next"
         :total="total"
         @current-change="currentChange"
-      >
-      </el-pagination>
+      ></el-pagination>
     </div>
 
     <!-- 添加内测会员弹框 -->
-    <el-dialog
-      title="添加内测会员"
-      :visible.sync="dialogFormVisible"
-      :show-close="false"
-      @close="close"
-    >
+    <el-dialog title="添加内测会员" :visible.sync="dialogFormVisible" :show-close="false" @close="close">
       <div class="dialog_input" v-if="addSuccessT == '添加'">
         <p>绑定手机号</p>
-        <el-input placeholder="请输入内容" v-model="dialogI" clearable>
-        </el-input>
+        <el-input placeholder="请输入内容" v-model="dialogI" clearable></el-input>
         <i class="el-icon-close" v-if="addTips.code == 400"></i>
       </div>
       <div v-else class="Success_inp">
@@ -105,9 +108,7 @@
       </div>
       <p class="tips">{{ addTips.data }}</p>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false"
-          >{{ addSuccessT == "继续添加" ? "关 闭" : "取 消" }}
-        </el-button>
+        <el-button @click="dialogFormVisible = false">{{ addSuccessT == "继续添加" ? "关 闭" : "取 消" }}</el-button>
         <el-button @click="Clickadd">{{ addSuccessT }}</el-button>
       </div>
     </el-dialog>
@@ -119,6 +120,10 @@ export default {
   data() {
     return {
       censusList: [
+        {
+          num: 0,
+          title: "全部",
+        },
         {
           num: 0,
           title: "VIP会员",
@@ -154,17 +159,20 @@ export default {
       dialogFormVisible: false,
       dialogI: "",
       vip_level: {
-        0: "注册用户",
-        1: "内测会员",
-        2: "VIP会员",
-        3: "游客",
+        1: "注册用户",
+        2: "内测会员",
+        3: "VIP会员",
+        4: "游客",
       },
       activeOper: true, //批量模块颜色
       addTips: "", //添加文字颜色
-      total: 0, //列表条数
+      total: 1, //列表条数
       addSuccessT: "添加",
       pageNum: 1, //当前页数
       ids: "",
+      input: "", //搜索值
+      levels: "", //用户级别
+      sName: "", //搜索值
     };
   },
   methods: {
@@ -173,6 +181,8 @@ export default {
       let params = {
         page: this.pageNum,
         num: 10,
+        vip_level: this.levels,
+        keywords: this.sName,
       };
       this.$axiosGet("/user/list", params).then((res) => {
         if (res.code == 200) {
@@ -188,10 +198,12 @@ export default {
     // 用户数据统计
     getTotal() {
       this.$axiosGet("/user/total", {}).then((res) => {
-        this.censusList[0].num = res.data.vip;
-        this.censusList[1].num = res.data.nei_vip;
-        this.censusList[2].num = res.data.user;
-        this.censusList[3].num = res.data.vistor;
+        this.censusList[0].num =
+          res.data.vip + res.data.nei_vip + res.data.user + res.data.vistor;
+        this.censusList[1].num = res.data.vip;
+        this.censusList[2].num = res.data.nei_vip;
+        this.censusList[3].num = res.data.user;
+        this.censusList[4].num = res.data.vistor;
       });
     },
     // 添加内测用户
@@ -259,6 +271,41 @@ export default {
         this.Idsdelete(this.ids);
       }
     },
+    // 搜索
+    searchClick() {
+      this.sName = this.input;
+      this.getList();
+    },
+    // 搜索输入事件
+    inputClick(e) {
+      this.input = e;
+      // 点击清空后自动调取函数
+      if (this.input == "") {
+        this.sName = "";
+        this.getList();
+      }
+    },
+    // 会员级别点击过滤
+    levelClick(index) {
+      switch (index) {
+        case 0:
+          this.levels = "";
+          break;
+        case 1:
+          this.levels = 3;
+          break;
+        case 2:
+          this.levels = 2;
+          break;
+        case 3:
+          this.levels = 1;
+          break;
+        case 4:
+          this.levels = 4;
+          break;
+      }
+      this.getList();
+    },
   },
   created() {
     this.getList();
@@ -281,37 +328,75 @@ export default {
     font-size: 16px;
     font-weight: 600;
     color: #3b6dee;
+    width: auto;
+    min-width: 1000px;
 
     .el-button {
-      margin: 0 14px 0 100px;
+      margin: 10px 14px 10px 100px;
       background: linear-gradient(180deg, #7fb1fb 0%, #3b6dee 100%);
       color: #fff;
     }
 
     p {
-      flex: 1;
+      // flex: 1;
+      cursor: pointer;
+      width: auto;
+      min-width: 100px;
     }
   }
 
   .operation {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 12px 14px 12px 0;
     cursor: pointer;
+    width: auto;
+    min-width: 1000px;
+    .batch {
+      display: flex;
+      align-items: center;
+      .items {
+        margin-left: 26px;
 
-    .items {
-      margin-left: 26px;
+        span {
+          font-size: 14px;
+          font-weight: 400;
+          color: rgba(0, 0, 0, 0.85);
+          margin-left: 5px;
+        }
 
-      span {
-        font-size: 14px;
-        font-weight: 400;
-        color: rgba(0, 0, 0, 0.85);
-        margin-left: 5px;
+        i {
+          color: rgba(0, 0, 0, 0.85);
+        }
       }
+    }
 
-      i {
-        color: rgba(0, 0, 0, 0.85);
+    .search {
+      display: flex;
+      align-items: center;
+      width: 442px;
+      height: 36px;
+      background: #ffffff;
+      border-radius: 18px;
+      border: 1px solid #e4e4e4;
+      img {
+        width: 31px;
+        height: 34px;
+        padding-left: 11px;
+      }
+      .el-input {
+        height: 34px;
+      }
+      .searchBtn {
+        border-left: 1px solid #e4e4e4;
+        width: 50px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        padding: 0 9px;
+        color: #000a12;
+        line-height: 29px;
       }
     }
   }

@@ -2,26 +2,16 @@
   <div class="login">
     <h1 class="title">爱招投标后台管理平台</h1>
     <div class="input">
-      <el-form
-        :model="ruleForm"
-        status-icon
-        :rules="rules"
-        ref="ruleForm"
-        class="demo-ruleForm"
-      >
+      <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" class="demo-ruleForm">
         <el-form-item prop="userName">
           <div class="input_items">
-            <img src="../assets/images/username.png" alt="" />
-            <el-input
-              v-model="ruleForm.userName"
-              autocomplete="off"
-              placeholder="请输入管理账号"
-            ></el-input>
+            <img src="../assets/images/username.png" alt />
+            <el-input v-model="ruleForm.userName" autocomplete="off" placeholder="请输入管理账号"></el-input>
           </div>
         </el-form-item>
         <el-form-item prop="passWord">
           <div class="input_items">
-            <img src="../assets/images/password.png" alt="" />
+            <img src="../assets/images/password.png" alt />
             <el-input
               type="password"
               v-model="ruleForm.passWord"
@@ -31,9 +21,7 @@
           </div>
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="Remchecked" @change="Checkchange"
-            >记住账户密码</el-checkbox
-          >
+          <el-checkbox v-model="Remchecked" @change="Checkchange">记住账户密码</el-checkbox>
         </el-form-item>
         <el-form-item>
           <el-button @click="submitForm('ruleForm')">登 录</el-button>
@@ -93,6 +81,10 @@ export default {
                 "access_token",
                 res.data.data.token
               );
+              // this.$router.push({
+              //   name: "Home",
+              //   params: {},
+              // });
               this.$router.push({
                 name: "Member",
                 params: {},

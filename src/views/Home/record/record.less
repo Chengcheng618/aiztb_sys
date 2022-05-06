@@ -1,0 +1,57 @@
+.goback {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    width: auto;
+    min-width: 1000px;
+
+    .total {
+        display: flex;
+        align-items: center;
+        margin: 0;
+
+        li {
+            list-style-type: none;
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.85);
+            line-height: 29px;
+            margin-left: 40px;
+            width: 200px;
+
+            p {
+                span {
+                    &:first-child {
+                        color: #7fa3ff;
+                        margin-right: 10px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.table {
+    .lookInfo {
+        border: none !important;
+        font-size: 14px;
+        font-weight: 400;
+        color: #7FA3FF;
+        line-height: 16px;
+    }
+
+    .pages {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+}
+
+/deep/.el-table {
+    .el-table__cell {
+        text-align: center;
+    }
+}
