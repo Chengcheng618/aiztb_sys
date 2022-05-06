@@ -100,16 +100,16 @@ export default {
           this.vip_level = "";
           break;
         case 1:
-          this.vip_level = 3;
+          this.vip_level = 4;
           break;
         case 2:
-          this.vip_level = 0;
-          break;
-        case 3:
           this.vip_level = 1;
           break;
-        case 4:
+        case 3:
           this.vip_level = 2;
+          break;
+        case 4:
+          this.vip_level = 3;
           break;
 
         default:

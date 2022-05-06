@@ -393,17 +393,17 @@ export default {
       console.log(111);
     },
   },
-  created() {
-    this.type = this.$route.query.type;
+  mounted() {
+    this.type = Number(this.$route.query.type);
     this.id = this.$route.query.id;
     switch (this.type) {
-      case "1":
+      case 1:
         this.getdetail("/content/detail");
         break;
-      case "2":
+      case 2:
         this.getdetail("/require/detail");
         break;
-      case "3":
+      case 3:
         this.getdetail("/company/detail");
 
         break;

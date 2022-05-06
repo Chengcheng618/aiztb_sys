@@ -63,8 +63,8 @@
               }}
             </span>
             <span v-else>
-              {{scope.row.type == 1 && active == 2
-              ? "采购需求":scope.row.type == 1 &&active == 2?'工程需求':'服务需求'}}
+              {{scope.row.type == 1
+              ? "采购需求":scope.row.type == 1?'工程需求':'服务需求'}}
             </span>
           </template>
         </el-table-column>
@@ -93,9 +93,14 @@
         </el-table-column>
         <el-table-column label="审核时间" align="center">
           <template slot-scope="scope">
-            <span v-if="scope.row.check_time">{{ scope.row.check_time }}</span>
-            <span v-if="scope.row.certify_time">{{ scope.row.certify_time }}</span>
-            <i class="el-icon-minus" v-else></i>
+            <div v-if="active != '3'">
+              <span v-if="scope.row.check_time">{{ scope.row.check_time }}</span>
+              <i class="el-icon-minus" v-else></i>
+            </div>
+            <div v-else>
+              <span v-if="scope.row.certify_time">{{ scope.row.certify_time }}</span>
+              <i class="el-icon-minus" v-else></i>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="审核标识" align="center">
@@ -147,9 +152,10 @@ export default {
     return {
       pageNum: 1,
       vip_level: {
-        0: "普通用户",
-        1: "内测会员",
-        2: "VIP会员",
+        1: "普通用户",
+        2: "内测会员",
+        3: "VIP会员",
+        4: "游客",
       },
       status: {
         0: "待审核",

@@ -50,7 +50,12 @@
           <span v-else>{{ scope.row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="mobile" label="绑定手机号" align="center"></el-table-column>
+      <el-table-column prop="mobile" label="绑定手机号" align="center">
+        <template slot-scope="scope">
+          <span v-if="scope.row.mobile">{{scope.row.mobile}}</span>
+          <i class="el-icon-minus" v-else></i>
+        </template>
+      </el-table-column>
       <el-table-column label="内测绑定" align="center">
         <template slot-scope="scope">
           <i :class="scope.row.is_nei != 0 ? 'el-icon-check' : 'el-icon-minus'"></i>
@@ -66,7 +71,7 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="vip_level" label="全部" align="center" width="200">
+      <el-table-column prop="vip_level" label="用户等级" align="center" width="200">
         <template slot-scope="scope">
           <span>{{ vip_level[scope.row.vip_level] }}</span>
         </template>
@@ -154,10 +159,10 @@ export default {
       dialogFormVisible: false,
       dialogI: "",
       vip_level: {
-        0: "注册用户",
-        1: "内测会员",
-        2: "VIP会员",
-        3: "游客",
+        1: "注册用户",
+        2: "内测会员",
+        3: "VIP会员",
+        4: "游客",
       },
       activeOper: true, //批量模块颜色
       addTips: "", //添加文字颜色
@@ -287,16 +292,16 @@ export default {
           this.levels = "";
           break;
         case 1:
-          this.levels = 2;
+          this.levels = 3;
           break;
         case 2:
-          this.levels = 1;
+          this.levels = 2;
           break;
         case 3:
-          this.levels = 0;
+          this.levels = 1;
           break;
-
-        default:
+        case 4:
+          this.levels = 4;
           break;
       }
       this.getList();
