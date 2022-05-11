@@ -1,7 +1,7 @@
 <template>
   <div class="userinfo_details">
     <div class="goback">
-      <el-page-header @back="goBack" content="个人信息" style="width:200px"></el-page-header>
+      <el-page-header @back="goBack" content="企业详情" style="width:200px"></el-page-header>
     </div>
     <div class="main">
       <div class="basic">
@@ -14,10 +14,23 @@
         <ul>
           <li class="items" v-for="(item,index) in basicList" :key="index">
             <span>{{item.title}}：&nbsp;</span>
+            <span v-if="index != 8" :style="{color:item.name == '无' ? '#ccc':'#000'}">{{item.name}}</span>
+            <div v-else>
+              <span
+                v-for="(obj,index) in company_member"
+                :key="index"
+                style="color:#3B6DEE;cursor: pointer;"
+                @click="clickmember(obj.id)"
+              >
+                {{obj.username}}
+                <span v-if="index != company_member.length-1" style="color:#000">、</span>
+              </span>
+            </div>
             <span
-              :style="{color:index == 5 ? '#3B6DEE' :item.name == '无' ? '#ccc':'#000',cursor:index == 5 ?'pointer':''}"
-              @click="clickinfo(index)"
-            >{{item.name}}</span>
+              v-if="index == 2 || index == 7"
+              style="color:#3B6DEE;margin-left:10px;cursor: pointer;"
+              @click="clicklook(index)"
+            >{{index == 2?'查看':'查看详情'}}</span>
           </li>
         </ul>
       </div>
@@ -149,16 +162,17 @@ export default {
   data() {
     return {
       basicList: [
-        { title: "ID", name: "" },
-        { title: "昵称", name: "" },
-        { title: "联系电话", name: "" },
-        { title: "用户级别", name: "" },
+        { title: "企业名称", name: "" },
+        { title: "管理员ID", name: "" },
+        { title: "管理员昵称", name: "" },
+        { title: "管理员电话", name: "" },
+        { title: "管理员用户级别", name: "" },
         { title: "地址", name: "" },
-        { title: "企业认证", name: "" },
-        { title: "订阅位置", name: "" },
-        { title: "订阅关键词", name: "" },
+        { title: "所属行业", name: "" },
+        { title: "认证时间", name: "" },
+        { title: "企业成员", name: "" },
       ],
-      tabList: ["招标发布", "需求发布", "动态发布", "主营项目"],
+      tabList: ["招标发布", "需求发布", "动态发布", "主营项目", "变更信息"],
       activeName: "0",
       infoId: "", //当前用户id
       vip_level: {
@@ -173,8 +187,8 @@ export default {
       total: 1, //页数
       pageNum: 1,
       pagesize: 6,
+      type: 0, //个人或者企业区分
       company_member: [], //企业成员
-      company_id: "", //公司id
     };
   },
   methods: {
@@ -226,24 +240,24 @@ export default {
         this.total = res.count;
       });
     },
-    // 获取当前用户信息
-    getuserinfo() {
-      this.$axiosGet("/user/detail", { id: this.infoId }).then((res) => {
-        this.basicList[0].name = res.data.userInfo.id;
-        this.basicList[1].name = res.data.userInfo.username;
-        this.basicList[2].name = res.data.userInfo.mobile
-          ? res.data.userInfo.mobile
+    // 获取当前企业信息
+    getcompanyinfo() {
+      this.$axiosGet("/statistics/getDataCenterCompanyDetail", {
+        id: this.infoId,
+      }).then((res) => {
+        console.log(res.data);
+        this.basicList[0].name = res.data.company.company_name;
+        this.basicList[1].name = res.data.company.company_user_id;
+        this.basicList[2].name = res.data.company.username;
+        this.basicList[3].name = res.data.company.mobile;
+        this.basicList[4].name = res.data.company.vip_level;
+        this.basicList[5].name = res.data.company.address;
+        this.basicList[6].name = res.data.company.industry
+          ? res.data.company.industry
           : "无";
-        this.basicList[3].name = this.vip_level[res.data.userInfo.vip_level];
-        this.basicList[4].name = res.data.userInfo.address
-          ? res.data.userInfo.address
-          : "无";
-        this.basicList[5].name = res.data.company.company_name;
-        this.basicList[6].name = res.data.userInfo.province
-          ? `${res.data.userInfo.province}-${res.data.userInfo.city}`
-          : "无";
-        this.basicList[7].name = res.data.keywords ? res.data.keywords : "无";
-        this.company_id = res.data.company.id;
+        this.basicList[7].name = res.data.company.certify_time;
+        this.company_member = res.data.company_member;
+        window.sessionStorage.setItem("company_ID", res.data.company.id);
       });
     },
     // 翻页
@@ -267,26 +281,41 @@ export default {
           break;
       }
     },
-    // 企业认证跳转至认证页面
-    clickinfo(e) {
-      if (e == 5) {
+    // 企业成员跳转
+    clickmember(id) {
+      this.$router.push({
+        name: "UserinfoDeatils",
+      });
+      window.sessionStorage.setItem("ID", id);
+    },
+    // 查看信息点击
+    clicklook(e) {
+      console.log(e);
+      if (e == 2) {
+        let id = this.basicList[1].name;
+        this.$router.push({
+          name: "UserinfoDeatils",
+        });
+        window.sessionStorage.setItem("ID", id);
+      } else {
+        let id = window.sessionStorage.getItem("company_ID");
         this.$router.push({
           name: "Detail",
-          query: { id: this.company_id, type: 3 },
+          query: { id, type: 3 },
         });
       }
     },
   },
   created() {
-    this.infoId = window.sessionStorage.getItem("ID");
+    this.infoId = window.sessionStorage.getItem("company_ID");
     // 获取发布信息列表
-    this.getList("/user/getUserContentPublish");
-    // 获取当前用户信息
-    this.getuserinfo();
+    // this.getList("/user/getUserContentPublish");
+    // 获取当前企业信息
+    this.getcompanyinfo();
   },
 };
 </script>
 
 <style lang="less" scoped>
-@import "./userinfo_details.less";
+@import "../userinfo_details/userinfo_details";
 </style>

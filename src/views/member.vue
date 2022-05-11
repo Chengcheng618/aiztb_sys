@@ -187,11 +187,7 @@ export default {
       this.$axiosGet("/user/list", params).then((res) => {
         if (res.code == 200) {
           this.tableData = res.data;
-          this.$axiosGet("/user/pageInfo", {}).then((res) => {
-            if (res.code == 200) {
-              this.total = res.data;
-            }
-          });
+          this.total = res.count;
         }
       });
     },

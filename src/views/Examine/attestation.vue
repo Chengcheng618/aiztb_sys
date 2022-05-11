@@ -45,7 +45,7 @@ export default {
       this.$axiosGet("/company/list", params).then((res) => {
         if (res.code == 200) {
           this.tableData = res.data;
-          this.getpageInfo();
+          this.total = res.count;
         }
       });
     },
@@ -53,14 +53,6 @@ export default {
     getpage(e) {
       this.pageNum = e;
       this.getlist();
-    },
-    // 列表总数
-    getpageInfo() {
-      this.$axiosGet("/company/pageInfo", {}).then((res) => {
-        if (res.code == 200) {
-          this.total = res.data;
-        }
-      });
     },
     // 传递过来的时间值
     gettime(e) {

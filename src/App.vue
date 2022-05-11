@@ -21,7 +21,6 @@
           <el-menu-item
             index="/Home"
             :class="[path == '/Home' || path == '/memberRecharge' || path == '/Record'?'is-active':'']"
-            disabled
           >
             <img
               :src="path == '/Home' || path == '/memberRecharge' || path == '/Record' ? require('./assets/images/home_select.png') :require('./assets/images/home.png')"
@@ -30,10 +29,7 @@
             />
             <span class="menu_text">首页</span>
           </el-menu-item>
-          <el-submenu
-            index="数据中心"
-            disabled
-          >
+          <el-submenu index="数据中心" disabled>
             <template slot="title">
               <img
                 :src="path == '/Userinfo'  || path == '/UserinfoDeatils'? require('./assets/images/data_select.png') :require('./assets/images/data.png')"
@@ -42,8 +38,11 @@
               />
               <span class="menu_text">数据中心</span>
             </template>
-            <el-menu-item index="/Userinfo" :class="[path == '/Userinfo' || path == '/UserinfoDeatils'?'is-active':'']">
+            <el-menu-item index="/Userinfo" :class="[path == '/Userinfo'?'is-active':'']">
               <p>用户信息</p>
+            </el-menu-item>
+            <el-menu-item index="/Companyinfo" :class="[path == '/Companyinfo'?'is-active':'']">
+              <p>企业信息</p>
             </el-menu-item>
           </el-submenu>
           <el-menu-item index="/Member">

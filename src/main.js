@@ -16,19 +16,6 @@ Vue.prototype.$echarts = echarts
 
 Vue.use(ElementUI);
 Vue.use(VueAMap);
-VueAMap.initAMapApiLoader({
-    key: '71106c13172627b2d308f062e314f869',
-    plugin: [ // 这里根据自己项目按需引入插件
-        'Autocomplete',
-        'PlaceSearch',
-        'Scale',
-        'OverView',
-        'ToolBar',
-        'MapType',
-        'PolyEditor',
-        'AMap.CircleEditor'
-    ]
-});
 
 Vue.config.productionTip = false
 

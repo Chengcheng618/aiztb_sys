@@ -89,6 +89,7 @@ export default {
         num: 10,
       }).then((res) => {
         this.visit = res.data.visit;
+        this.total = res.data.count;
         this.totalList[0].num = res.data.total.visit_today_count;
         this.totalList[1].num = res.data.total.visit_today_user;
         this.totalList[2].num = res.data.total.history_total_count;
