@@ -24,7 +24,10 @@
           <el-checkbox v-model="Remchecked" @change="Checkchange">记住账户密码</el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button @click="submitForm('ruleForm')">登 录</el-button>
+          <el-button
+            @click="submitForm('ruleForm')"
+            @keydown.enter.native="submitForm('ruleForm')"
+          >登 录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -59,9 +62,10 @@ export default {
         userName: "",
         passWord: "",
       },
+
       rules: {
-        userName: [{ validator: validateUser, trigger: "blur" }],
-        passWord: [{ validator: validatePass, trigger: "blur" }],
+        userName: [{ validator: validateUser }],
+        passWord: [{ validator: validatePass }],
       },
       Remchecked: false,
     };
@@ -115,6 +119,12 @@ export default {
       };
       this.Remchecked = true;
     }
+    document.addEventListener("keydown", (e) => {
+      let key = window.event.keyCode;
+      if (key == 13) {
+        this.submitForm("ruleForm");
+      }
+    });
   },
 };
 </script>

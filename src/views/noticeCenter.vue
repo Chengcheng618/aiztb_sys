@@ -30,7 +30,12 @@
       </el-collapse>
     </div>
     <div class="pages">
-      <el-pagination :page-size="100" layout="prev, pager, next, jumper" :total="total"></el-pagination>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -39,19 +44,19 @@
 export default {
   data() {
     return {
-      total: 0,
+      total: 1,
       noticeList: [], //消息提示列表
       srcList: [], //大图预览数组
+      pageNum: 1,
     };
   },
   methods: {
     getlist() {
       let params = {
-        page: 1,
+        page: this.pageNum,
         num: 10,
       };
       this.$axiosGet("/userfeedback/list", params).then((res) => {
-        console.log(res);
         if (res.code == 200) {
           for (const obj of res.data) {
             for (const item of obj.pic_url) {
@@ -59,8 +64,13 @@ export default {
             }
           }
           this.noticeList = res.data;
+          this.total = res.count;
         }
       });
+    },
+    handleCurrentChange(val) {
+      this.pageNum = val;
+      this.getlist();
     },
   },
   mounted() {
@@ -114,9 +124,9 @@ export default {
   .el-collapse-item__content {
     padding-bottom: 20px;
   }
-  > .is-active {
-    background: #ffffff;
-    box-shadow: 0px 0px 5px 5px rgba(186, 189, 199, 0.25);
-  }
+  // > .is-active {
+  //   background: #ffffff;
+  //   box-shadow: 0px 0px 5px 5px rgba(186, 189, 199, 0.25);
+  // }
 }
 </style>

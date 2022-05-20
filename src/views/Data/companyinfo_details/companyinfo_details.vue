@@ -138,6 +138,22 @@
                   </div>
                 </el-collapse-item>
               </el-collapse>
+              <!-- 变更信息 -->
+              <el-collapse v-if="activeName == '4'" accordion>
+                <el-collapse-item v-for="(item,index) in list" :key="index">
+                  <template slot="title">
+                    <div class="collapse_title">
+                      <span>{{item.title}}</span>
+                      <span>{{item.alter_time}}</span>
+                    </div>
+                  </template>
+                  <div class="collapse_main">
+                    <span>变 更 前：{{item.before_content}}</span>
+                    <span>变 更 后：{{item.after_content}}</span>
+                    <span>变 更 人：{{item.action_user_id}}</span>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
             </el-tab-pane>
           </el-tabs>
           <div class="pages">
@@ -147,6 +163,7 @@
               :total="total"
               :page-size="pagesize"
               @current-change="currentChange"
+              :current-page.sync="currentPage"
             ></el-pagination>
           </div>
         </div>
@@ -189,6 +206,7 @@ export default {
       pagesize: 6,
       type: 0, //个人或者企业区分
       company_member: [], //企业成员
+      currentPage: 1,
     };
   },
   methods: {
@@ -197,18 +215,23 @@ export default {
     },
     handleClick(e) {
       this.activeName = e.name;
+      this.pageNum = 1;
+      this.currentPage = 1;
       switch (e.name) {
         case "0":
-          this.getList("/user/getUserContentPublish");
+          this.getList("/statistics/getCompanyContentPublish");
           break;
         case "1":
-          this.getList("/user/getUserRequirePublish");
+          this.getList("/statistics/getCompanyRequirePublish");
           break;
         case "2":
-          this.getList("/user/getUserMovementPublish");
+          this.getList("/statistics/getCompanyMovementPublish");
           break;
         case "3":
-          this.getList("/user/getUserMainBusinessPublish");
+          this.getList("/statistics/getCompanyMainBusinessPublish");
+          break;
+        case "4":
+          this.getList("/statistics/getCompanyAlterActionList");
           break;
 
         default:
@@ -265,16 +288,19 @@ export default {
       this.pageNum = e;
       switch (this.activeName) {
         case "0":
-          this.getList("/user/getUserContentPublish");
+          this.getList("/statistics/getCompanyContentPublish");
           break;
         case "1":
-          this.getList("/user/getUserRequirePublish");
+          this.getList("/statistics/getCompanyRequirePublish");
           break;
         case "2":
-          this.getList("/user/getUserMovementPublish");
+          this.getList("/statistics/getCompanyMovementPublish");
           break;
         case "3":
-          this.getList("/user/getUserMainBusinessPublish");
+          this.getList("/statistics/getCompanyMainBusinessPublish");
+          break;
+        case "4":
+          this.getList("/statistics/getCompanyAlterActionList");
           break;
 
         default:
@@ -309,7 +335,7 @@ export default {
   created() {
     this.infoId = window.sessionStorage.getItem("company_ID");
     // 获取发布信息列表
-    // this.getList("/user/getUserContentPublish");
+    this.getList("/statistics/getCompanyContentPublish");
     // 获取当前企业信息
     this.getcompanyinfo();
   },

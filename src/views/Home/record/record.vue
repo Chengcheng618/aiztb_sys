@@ -41,8 +41,8 @@
         ></el-table-column>
         <el-table-column prop="address" label="驻留时长" v-if="type == 1"></el-table-column>
         <el-table-column label="操作" v-if="type == 1">
-          <template>
-            <el-button size="mini" class="lookInfo">查看信息</el-button>
+          <template slot-scope="scope">
+            <el-button size="mini" class="lookInfo" @click="jumpClick(scope.row.id)">查看信息</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -120,6 +120,13 @@ export default {
         }
         this.visit = res.data;
       });
+    },
+    // 查看信息跳转
+    jumpClick(id) {
+      this.$router.push({
+        name: "UserinfoDeatils",
+      });
+      window.sessionStorage.setItem("ID", id);
     },
   },
   created() {

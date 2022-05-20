@@ -29,7 +29,7 @@
             />
             <span class="menu_text">首页</span>
           </el-menu-item>
-          <el-submenu index="数据中心" disabled>
+          <el-submenu index="数据中心" >
             <template slot="title">
               <img
                 :src="path == '/Userinfo'  || path == '/UserinfoDeatils'? require('./assets/images/data_select.png') :require('./assets/images/data.png')"
